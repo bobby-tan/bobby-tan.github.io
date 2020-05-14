@@ -27,7 +27,7 @@ Let's use a simple example to back this idea. Let's say we have a regressive mod
 
 >We can train a new model to predict the errors made by the original model.
 
-Now, given any predictive model, we can improve its accuracy by first, training a new model to predict its current errors. Then, forming a new improved model whose output is the fine-tuned version of the original prediction. The improved model, which requires the outputs of both the *original model* and the *error-predicting model*, is now considered an ensemble of the two. 
+Now, given any predictive model, we can improve its accuracy by first, training a new model to predict its current errors. Then, forming a new improved model whose output is the fine-tuned version of the original prediction. The improved model, which requires the outputs of both the *original model* and the *error-predicting model*, is now considered an ensemble of the two. In gradient boosting, this is repeated arbitrary number of times to continually improve the model's accuracy. This repeated process forms the crux of gradient boosting.
 
 ### An Ensemble of Weak Learners
 
@@ -45,10 +45,13 @@ $$
 \end{align*}
 $$
 
-Everytime we improve the model, a new learner will be learned and added into the ensemble. In the end, we get an ensemble.
+Everytime we improve the overall model, a new model will be learned and added into the ensemble. In the end, we get an ensemble. The number of new models to add and *$$ alpha $$* are hyperparameters.
 
+### "Gradient" Boosting
 
+To end it off, we explore why this is called *"gradient"* boosting. It turns out that the error which we are talking about earlier is the gradient of the loss function with respect to model prediction prediction. We can think about the squared error loss function as an example. When the squared error is differentiated, we get the difference between the predicted value and the true value which happens to be the "error" which our new train our error-predicting models to predict. Errors for other types of predictive problems such as classification problems can be expressed via the gradient in the same way.
 
+Mathematically, the gradient of the loss function with respect to the predictions gives the direction in which the predictions should be adjusted to maximize the loss. In gradient boosting, we predict and adjust our predictions in the opposite (negative gradient) direction. This achieves the opposite (minimize the loss). Since, the loss of a model inversely relates to its performance and accuracy, doing so improves its performance. {% marginnote 'sn-three' 'You can also think about this as a form of Gradient Descend.'%} Intuitively, we are shifting our model predictions in small steps towards directions which improve the overall performance of our model. 
 
 
 

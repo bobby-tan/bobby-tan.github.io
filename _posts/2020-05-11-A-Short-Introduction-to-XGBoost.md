@@ -31,19 +31,21 @@ Now, given any predictive model, we can improve its accuracy by first, training 
 
 ### An Ensemble of Weak Learners
 
-When trainining a new error-predicting model to predict a model's errors, we regularize its complexity to prevent *overfitting* {% marginnote 'sn-one' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}. As a result, it will have *'errors'* in predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on that (new error-predicting model's) prediction, it will still have errors albeit lower.
+When trainining a new error-predicting model to predict a model's current errors, we regularize its complexity to prevent *overfitting* {% marginnote 'sn-one' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}. As a result, it will have *'errors'* in predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on that (new error-predicting model's) prediction, it will still have errors albeit lower.
 
-To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error-predicting model by applying a small weight, *$$ alpha $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error-prediction models for newly formed improved models till the accuracy or error is satisfactory. 
+To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error-predicting model by applying a small weight, *$$ alpha $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error-prediction models for newly formed improved models till the accuracy or error is satisfactory. This can be summed up using the equations below.
 
-{% marginnote 'sn-two' 'Typically, the error-predicting model predicts the negative error and so, we use an addition instead of deduction.'%}
+{% marginnote 'sn-two' 'Typically, the error-predicting model predicts the current negative error and so, we use an addition instead of deduction.'%}
 
 $$
 \begin{align*}
-&improved\_model(x) = current\_model(x) + alpha \times error\_prediction\_model(x) - (1) \\~\\
+&improved\_model(x) = current\_model(x) + alpha \times error\_pred\_model(x)\\~\\
 &current\_model(x) = improved\_model(x)\\~\\
-&Then, we \ repeat.
+&Repeat \ above \ 2 \ steps \ till \ satisfactory.
 \end{align*}
 $$
+
+Everytime we improve the model, a new learner will be learned and added into the ensemble. In the end, we get an ensemble.
 
 
 

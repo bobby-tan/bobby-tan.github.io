@@ -1,14 +1,19 @@
 ---
-layout: full-width
-title: About
+layout: page
+title: The XGBoost Model
 ---
+# A Short Introduction to XGBoost
 
-The *Tufte-Jekyll* theme is a natural extension of the work done by [Edward Tufte](https://github.com/edwardtufte/tufte-css) and his collaborators on Github who created a CSS file that allows web writers to use the same simple and elegant style employed in his published materials.
+IN THIS ARTICLE, we use simple concepts to present a very influential and powerful algorithm called *EXtreme Gradient Boosting* (insert reference and link here). This technique, more commonly known as XGBoost, has been the winning algorithm for many recent data science challenges.
 
-To incorporate these styles into a Jekyll theme, I have made some very slight modifications that attempt to maintain the feel of the CSS styles in his Github repo.
+EXtreme Gradient Boosting (XGBoost) is an implementation of the Gradient Boosting (insert reference or link) technique which focuses on exploiting various hardware and software optimizations to train powerful predictive models quickly. 
 
-Note that this is a full-width layout. This was accomplished by including ```layout: full-width``` in the YAML front matter for this page. Keep in mind that all the Tufte-Jekyll sidenote and marginnote goodness will not work on full-width layouts! 
+As such, we will first explain gradient boosting to set readers in context. Then, we walk through the workings of XGBoost qualitatively, drawing connections to the gradient boosting concepts as necessary. Finally, we talk about the various optimizations implemented and the ideas behind them. 
 
-You can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll).
+In writing this article, I have made it a personal goal to keep this as concise and as qualitative as possible, bringing in equations only if it aids in the explanation. The goal is to provide readers with an intuition of how Gradient Boosting and XGBoost works. 
 
 
+
+## Gradient Boosting
+
+Gradient Boosting involves building an ensemble of weak learners. It builds upon 2 key ideas. The first idea is that *we can improve a model's prediction if we are able to account for its error*. Let's use a simple example to back this idea. Let's say we have a regressive model which predicts 3 for a test case whose actual outcome is 1. If we know the error, which is 2 in the given example, we can fine-tune the prediction by subtracting the error, 2 ,from the original prediction, 3. This yields a more accurate prediction of 1. This begs the question, "How do we know the error?". This leads us to our second key idea. We can train a new model to predict the errors made by the model. 

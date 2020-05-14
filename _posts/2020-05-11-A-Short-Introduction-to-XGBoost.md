@@ -19,19 +19,35 @@ In writing this article, I have made it a personal goal to be as concise and as 
 
 Gradient Boosting involves building an ensemble of weak learners. It builds upon 2 key insights. Here's insight one.
 
->*If we can account for our model's errors, we will be able to improve our model's performance.*
+>If we can account for our model's errors, we will be able to improve our model's performance.
 
+<p id="example">
 Let's use a simple example to back this idea. Let's say we have a regressive model which predicts 3 for a test case whose actual outcome is 1. If we know the error (2 in the given example), we can fine-tune the prediction by subtracting the error, 2 ,from the original prediction, 3 and obtain a more accurate prediction of 1. This begs the question, *"How do we know the error made by our model for any given input?"*, which leads us to our second insight.
+</p>
 
->*We can train a new model to predict the errors made by the original model.*
+>We can train a new model to predict the errors made by the original model.
 
-Now, given any predictive model, we can improve its accuracy by first, training a new model to predict its current errors. Then, forming an improved model whose output is the fine-tuned version of the original prediction. The improved model, which requires the outputs of both the *original model* and the *error-predicting model*, is now considered an ensemble of the two. 
+Now, given any predictive model, we can improve its accuracy by first, training a new model to predict its current errors. Then, forming a new improved model whose output is the fine-tuned version of the original prediction. The improved model, which requires the outputs of both the *original model* and the *error-predicting model*, is now considered an ensemble of the two. 
 
 ### An Ensemble of Weak Learners
 
-When trainining a new model to predict a model's errors, we regularize its complexity to prevent *overfitting* {% marginnote 'sn-one' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}. As a result, the new model will have *'errors'* in predicting the original model's *'errors'*. 
+When trainining a new error-predicting model to predict a model's errors, we regularize its complexity to prevent *overfitting* {% marginnote 'sn-one' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}. As a result, it will have *'errors'* in predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on that (new error-predicting model's) prediction, it will still have errors albeit lower.
 
-To mitigate this, we 
+To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error-predicting model by applying a small weight, *$$ alpha $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error-prediction models for newly formed improved models till the accuracy or error is satisfactory. 
+
+{% marginnote 'sn-two' 'Typically, the error-predicting model predicts the negative error and so, we use an addition instead of deduction.'%}
+
+$$
+\begin{align*}
+&improved\_model(x) = current\_model(x) + alpha \times error\_prediction\_model(x) - (1) \\~\\
+&current\_model(x) = improved\_model(x)\\~\\
+&Then, we \ repeat.
+\end{align*}
+$$
+
+
+
+
 
 
 

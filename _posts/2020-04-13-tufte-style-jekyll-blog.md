@@ -307,6 +307,7 @@ The table above was written in HTML as follows:
 
 {% marginnote 'tableID-3' 'Table 3: a table created with *Markdown Extra* markup using only the default table styling' %}
 
+
 |                 |mpg  | cyl  |  disp  |   hp   |  drat  | wt  |
 |:----------------|----:|-----:|-------:|-------:|-------:|----:|
 |Mazda RX4        |21   |6     |160     |110     |3.90    |2.62 |
@@ -317,7 +318,10 @@ The table above was written in HTML as follows:
 |Valiant          |18.1 |6     |160     |105     |2.76    |3.46 |
 
 
+
+
 Using the following Markdown formatting:
+
 
 ```
 |                 |mpg  | cyl  |  disp  |   hp   |  drat  | wt  |

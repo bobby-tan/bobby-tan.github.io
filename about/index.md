@@ -1,12 +1,11 @@
 ---
-layout: page
-title: The XGBoost Model
+layout: article
+title: A Short Introduction to XGBoost
 ---
-# A Short Introduction to XGBoost
 
-IN THIS ARTICLE, we use simple concepts to present a very influential and powerful algorithm called *EXtreme Gradient Boosting* (insert reference and link here). This technique, more commonly known as XGBoost, has been the winning algorithm for many recent data science challenges.
+IN THIS ARTICLE, we use simple concepts to present a very influential and powerful algorithm called *Extreme Gradient Boosting* (insert reference and link here). This technique, more commonly known as XGBoost, has been the winning algorithm for many recent data science challenges.
 
-EXtreme Gradient Boosting (XGBoost) is an implementation of the Gradient Boosting (insert reference or link) technique which focuses on exploiting various hardware and software optimizations to train powerful predictive models quickly. 
+Extreme Gradient Boosting (XGBoost) is an implementation of Gradient Boosting (insert reference or link) machines which focuses on exploiting various hardware and software optimizations to train powerful predictive models quickly. 
 
 As such, we will first explain gradient boosting to set readers in context. Then, we walk through the workings of XGBoost qualitatively, drawing connections to the gradient boosting concepts as necessary. Finally, we talk about the various optimizations implemented and the ideas behind them. 
 

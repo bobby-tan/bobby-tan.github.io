@@ -1,10 +1,10 @@
-baseurl:
-title: Tufte-Jekyll
+baseurl: /bobbys-notes
+title: bobbys-notes
 subtitle: 
 author: Bobby Tan
 simple_search: http://google.com/search
-description: A Jekyll theme for content-rich sites
-name: tufte
+description: Snippets of thought from Bobby
+name: bobbys-notes
 markdown: kramdown
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 permalink: /articles/:short_year/:title

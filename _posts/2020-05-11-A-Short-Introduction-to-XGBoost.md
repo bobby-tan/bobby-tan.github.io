@@ -55,7 +55,9 @@ Mathematically, the derivative of the loss function, $$ \frac{\partial loss}{\pa
 
 Intuitively, we are shifting our model predictions in small steps towards directions which improve the overall performance of our model. 
 
+## XGBoost
 
+XGBoost is a flavour of gradient boosting machines.
 
 
 

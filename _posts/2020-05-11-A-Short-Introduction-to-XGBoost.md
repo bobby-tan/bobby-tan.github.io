@@ -33,26 +33,27 @@ Now, given any predictive model, we can improve its accuracy by first, training 
 
 When trainining a new error-predicting model to predict a model's current errors, we regularize its complexity to prevent *overfitting* {% marginnote 'sn-one' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}. As a result, it will have *'errors'* in predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on that (new error-predicting model's) prediction, it will still have errors albeit lower.
 
-To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error-predicting model by applying a small weight, *$$ alpha $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error-prediction models for newly formed improved models till the accuracy or error is satisfactory. This can be summed up using the equations below.
+To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error-predicting model by applying a small weight, *$$ \alpha $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error-prediction models for newly formed improved models till the accuracy or error is satisfactory. This can be summed up using the equations below.
 
 {% marginnote 'sn-two' 'Typically, the error-predicting model predicts the current negative error and so, we use an addition instead of deduction.'%}
 
 $$
 \begin{align*}
-&improved\_model(x) = current\_model(x) + alpha \times error\_pred\_model(x)\\~\\
+&improved\_model(x) = current\_model(x) + \alpha \times error\_pred\_model(x)\\~\\
 &current\_model(x) = improved\_model(x)\\~\\
 &Repeat \ above \ 2 \ steps \ till \ satisfactory.
 \end{align*}
 $$
 
-Everytime we improve the overall model, a new model will be learned and added into the ensemble. In the end, we get an ensemble. The number of new models to add and *$$ alpha $$* are hyperparameters.
+Everytime we improve the overall model, a new model will be learned and added into the ensemble. In the end, we get an ensemble. The number of new models to add and *$$ \alpha $$* are hyperparameters.
 
 ### "Gradient" Boosting
 
-To end it off, we explore why this is called *"gradient"* boosting. It turns out that the error which we are talking about earlier is the gradient of the loss function with respect to model prediction prediction. We can think about the squared error loss function as an example. When the squared error is differentiated, we get the difference between the predicted value and the true value which happens to be the "error" which our new train our error-predicting models to predict. Errors for other types of predictive problems such as classification problems can be expressed via the gradient in the same way.
+To end it off, we explore why this is called *"gradient"* boosting. It turns out that the error which we are talking about earlier is the gradient of the loss function with respect to model prediction prediction, $$ \frac{\partial loss}{\partial pred} $$. Think about the squared error loss function, $$ 0.5 (y_{true}-y_{pred})^2 $$. When we differentiate that, we get $$ y_{pred}-y_{true} $$ which uncoincidentally happens to be the "error" which we train our new error-predicting models to predict. Similarly, errors for other types of predictive problems such as classification problems can be expressed via the gradient.
 
-Mathematically, the gradient of the loss function with respect to the predictions gives the direction in which the predictions should be adjusted to maximize the loss. In gradient boosting, we predict and adjust our predictions in the opposite (negative gradient) direction. This achieves the opposite (minimize the loss). Since, the loss of a model inversely relates to its performance and accuracy, doing so improves its performance. {% marginnote 'sn-three' 'You can also think about this as a form of Gradient Descend.'%} Intuitively, we are shifting our model predictions in small steps towards directions which improve the overall performance of our model. 
+Mathematically, the derivative of the loss function, $$ \frac{\partial loss}{\partial pred} $$, gives the direction in which the predictions should be adjusted to maximize the loss. In gradient boosting, we predict and adjust our predictions in the opposite (negative gradient) direction. This achieves the opposite (minimize the loss). Since, the loss of a model inversely relates to its performance and accuracy, doing so improves its performance. {% marginnote 'sn-three' 'You can also think about this as a form of Gradient Descend.'%} 
 
+Intuitively, we are shifting our model predictions in small steps towards directions which improve the overall performance of our model. 
 
 
 

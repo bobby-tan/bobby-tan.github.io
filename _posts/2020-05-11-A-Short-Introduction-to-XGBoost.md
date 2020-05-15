@@ -7,7 +7,7 @@ $$
 \DeclareMathOperator{\diag}{diag}
 $$
 
-{% newthought 'In this article' %}, we present a very influential and powerful algorithm called *Extreme Gradient Boosting*. This technique, more commonly known as XGBoost, has been the winning algorithm for many recent data science challenges. It is an implementation of Gradient Boosting machines which exploits various hardware and software optimizations to train powerful predictive models very quickly. 
+{% newthought 'In this article' %}, we present a very influential and powerful algorithm called *Extreme Gradient Boosting* or XGBoost. It is an implementation of Gradient Boosting machines which exploits various optimizations to train powerful predictive models very quickly. 
 
 As such, we will first explain *Gradient Boosting* to set readers in context. Then, we walk through the workings of XGBoost qualitatively, drawing connections to gradient boosting concepts as necessary. Finally, we talk about the various optimizations implemented and the ideas behind them. 
 
@@ -27,7 +27,7 @@ Let's use a simple example to back this idea. Let's say we have a regressive mod
 
 >We can train a new model to predict the errors made by the original model.
 
-Now, given any predictive model, we can improve its accuracy by first, training a new model to predict its current errors. Then, forming a new improved model whose output is the fine-tuned version of the original prediction. The improved model, which requires the outputs of both the *original model* and the *error-predicting model*, is now considered an ensemble of the two. In gradient boosting, this is repeated arbitrary number of times to continually improve the model's accuracy. This repeated process forms the crux of gradient boosting.
+Now, given any predictive model, we can improve its accuracy by first, training a new model to predict its current errors.{% marginnote 'sn-zero' 'The model used to predict the error can be any function approximator.'%}Then, forming a new improved model whose output is the fine-tuned version of the original prediction. The improved model, which requires the outputs of both the *original model* and the *error-predicting model*, is now considered an ensemble of the two. In gradient boosting, this is repeated arbitrary number of times to continually improve the model's accuracy. This repeated process forms the crux of gradient boosting.
 
 ### An Ensemble of Weak Learners
 
@@ -36,6 +36,7 @@ When trainining a new error-predicting model to predict a model's current errors
 To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error-predicting model by applying a small weight, *$$ \alpha $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error-prediction models for newly formed improved models till the accuracy or error is satisfactory. This can be summed up using the equations below.
 
 {% marginnote 'sn-two' 'Typically, the error-predicting model predicts the current negative error and so, we use an addition instead of deduction.'%}
+<p id="steps"></p>>
 
 $$
 \begin{align*}
@@ -45,7 +46,7 @@ $$
 \end{align*}
 $$
 
-Everytime we improve the overall model, a new model will be learned and added into the ensemble. In the end, we get an ensemble. The number of new models to add and *$$ \alpha $$* are hyperparameters.
+Everytime we improve the overall model, a new model will be learned and added into the ensemble. In the end, we get an ensemble. The number of new models to add and *$$ \alpha $$* are hyperparameters. 
 
 ### "Gradient" Boosting
 
@@ -57,7 +58,12 @@ Intuitively, we are shifting our model predictions in small steps towards direct
 
 ## XGBoost
 
-XGBoost is a flavour of gradient boosting machines.
+XGBoost is a flavour of gradient boosting machines and Gradient Boosting Trees (gbtree) are the recommended function approximator. In XGBoost, first, we start with a simple predictor, one that predicts any arbitrary number for all values. Next, we apply what <a href="#steps">we've learnt just now</a>>. We train a gbtree to predict the negative gradient and use its output to adjust the original predictions. The combination of the two models forms our new improved model. Then, we apply <a href="#steps">the idea</a> again with the new model until the results are satisfactory. 
+
+### Gradient Boosting Trees
+
+In building a gbtree, we learn train the model such that the overall loss of the current model is minimized while keeping in mind not to *overfit the model*. To do this,
+
 
 
 

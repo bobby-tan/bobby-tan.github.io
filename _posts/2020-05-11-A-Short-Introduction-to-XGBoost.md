@@ -58,19 +58,28 @@ Intuitively, we are shifting our model predictions in small steps towards direct
 
 ## XGBoost
 
-XGBoost is a flavour of gradient boosting machines and Gradient Boosting Trees (gbtree) are the recommended function approximator. 
+XGBoost is a flavour of gradient boosting machines and Gradient Boosting Trees (gbtree) is the recommended function approximator. 
 
-In XGBoost, first, we start with a simple predictor, one that predicts an arbitrary number for all values (usually 0.5). Next, we apply what <a href="#steps">we've learnt just now</a>. We train a gbtree to predict the negative gradient and use its output to adjust the original predictions. The combination of the two models forms our new improved model. Then, we apply <a href="#steps">the idea</a> again on the new model until the results are satisfactory. 
+We first start with a simple predictor, one that predicts an arbitrary number for all values (usually 0.5). Then, we apply what <a href="#steps">we've learnt above</a>. In the next section, we explain in further detail, how the trees are learnt. 
 
 ### Gradient Boosting Tree
 
-In XGBoost, we learn a tree such that the overall loss of the new model is minimized while keeping in mind not to *overfit the model*. To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value for all inputs. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it still helps in decreasing the loss. 
+In XGBoost, we learn a tree whose output can be added to our current prediction such that the overall loss of the new model is minimized while keeping in mind not to *overfit the model*. 
+
+To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value for all inputs. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing the loss. The problem above can be represented by this equation. 
 
 $$
 
-o = \sum_{i \} 
+o = \arg\max_{o}  \sum_{i = 1}^N loss(y_i, f(x_i)+o) + \frac{1}{2}\lambda o^2 \\ ~ \\
+
+\begin{align*}
+&where\ N\ is\ the\ number\ of\ samples,\ f\ is\ the\ original\ model,\\
+&\lambda\ is\ a\ L2\ regularization\ parameter\ and\ o\ is\ the\ value\ which\ we\ want\ to\ find.
+\end{align*}
 
 $$
+
+
 
 
 

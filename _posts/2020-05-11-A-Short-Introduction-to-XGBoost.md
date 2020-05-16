@@ -60,7 +60,7 @@ Intuitively, we are shifting our model predictions in small steps towards direct
 
 XGBoost is a flavour of gradient boosting machines and Gradient Boosting Trees (gbtree) is the recommended function approximator. 
 
-We first start with a simple predictor, one that predicts an arbitrary number for all values (usually 0.5). Then, we apply what <a href="#steps">we've learnt above</a>. In the next section, we explain in further detail, how the trees are learnt. 
+We first start with a simple predictor, one that predicts an arbitrary number for all values (usually 0.5). Then, we apply what <a href="#steps">we've learnt above</a>. {% marginnote 'sn-four' 'In XGBoost, gbtrees are trained in a slightly different manner. It does not involve directly predicting gradients. You will see that later on.'%}In the next section, we explain in further detail, how the trees are learnt. 
 
 ### Gradient Boosting Tree
 
@@ -70,14 +70,48 @@ To understand it better, let's start from the simplest possble tree which makes 
 
 $$
 
-o = \arg\max_{o}  \sum_{i = 1}^N loss(y_i, f(x_i)+o) + \frac{1}{2}\lambda o^2 \\ ~ \\
+~\\ ~ \\
+
+Loss(o) = \min_{o}  \sum_{i = 1}^N loss(y_i, f(x_i)+o) + \frac{1}{2}\lambda o^2 \\ ~ \\
 
 \begin{align*}
 &where\ N\ is\ the\ number\ of\ samples,\ f\ is\ the\ original\ model,\\
-&\lambda\ is\ a\ L2\ regularization\ parameter\ and\ o\ is\ the\ value\ which\ we\ want\ to\ find.
+&\lambda \ is\ the\ L2\ regularization\ parameter\ and\ o\ is\ the\ value\ which\ we\ want\ to\ find.
 \end{align*}
 
 $$
+
+This can be solved by differentiating the above expression with respect to $$ o $$, setting the the derivative to 0 and then finding the corresponding $$ o $$.{% marginnote 'sn-five' 'Refer to this <a href="https://towardsdatascience.com/intuitions-on-l1-and-l2-regularisation-235f2db4c261">article</a> for the intuition behind L2 reularization.'%} The $$ \frac{1}{2}\lambda o^2 $$ term is the L2 regularization parameter which has been shown experimentally to be effective in preventing overfitting. While not useful in this already underfitted model, it will come into relevance as we increase the tree complexity.
+
+Now, try to solve for $$ o $$. It turns out that there's no trivial solution as the expression above is hard to differentiate. To resolve this problem, we simplify the expression using the Sterling's approximation. We now represent the above objective function as $$ Loss $$, with the capital L.
+
+$$
+
+~ \\ ~ \\ 
+
+Loss(o) \approx  \sum_{i = 1}^N [loss(y_i, f(x_i)) + \frac{\partial loss}{\partial \widehat{y}}(y_i, f(x_i))o + \frac{1}{2} \frac{\partial^2 loss}{\partial \widehat{y}^2}(y_i, f(x_i)) o^2] + \frac{1}{2}\lambda o^2 \\ ~ \\
+
+\approx \sum_{i = 1}^N [loss(y_i, f(x_i)) + g_io + \frac{1}{2} h_i o^2] + \frac{1}{2}\lambda o^2 \\~ \\
+
+where\ g_i = \frac{\partial loss}{\partial \widehat{y}}(y_i, f(x_i)) \ and\ h_i=\frac{\partial^2 loss}{\partial \widehat{y}^2}(y_i, f(x_i)).
+
+$$
+
+This simplified expression can be differentiated easily and after setting the derivative to 0, we can solve and obtain $$ o $$. It turns out that $$ o $$ is the following. We will not solve it here for the sake of conciseness. 
+
+$$
+
+o = \frac{\sum_{i = 1}^N g_i}{\sum_{i = 1}^N h_i + \lambda}
+
+$$
+
+Keep in mind that, now, given a model $$ f $$ and a set of samples, we can find a single adjustment $$ o $$ which can improve our model. Note that $$ o $$ can also be substituted back into the equation to compute the value of $$ Loss $$. The remaining of this section talks about how XGBoost further improves (decrease the loss) by making the simple model more complex (growing the tree). Here's the overall idea. 
+
+>  By cleverly dividing the samples into subgroups and then finding $$ o $$ for each subgroup (using the method above), the performance of the model can be further improved (loss can be brought lower).
+
+The samples can be divided using split conditions. For example, if a split condition is *"feature x less than 10"*, samples whose feature x has value less than 10 will go into 1 subgroup and the rest, to the other group. Each subgroup can be further divided into subgroups using more splits if necessary like a decision tree. For each subgroup, the optimal $$ o $$ can be solved using the above technique. Then, the loss for each subgroup can be computed also be computed accordingly by substituting optimal $$ o $$ back. The overall loss, $$ Loss $$, is the summation of the loss of each subgroup (leaves in the decision tree).
+
+The decisions of whether to split and if so, which split to use depends on whether a split can reduce the overall loss, $$ Loss $$ and how much each split decreases $$ Loss $$ respectively. We always choose the split that decreases $$ Loss $$ the most (improve model the most). 
 
 
 

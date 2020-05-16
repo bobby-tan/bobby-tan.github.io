@@ -52,17 +52,27 @@ Everytime we improve the overall model, a new model will be learned and added in
 
 To end it off, we explore why this is called *"gradient"* boosting. It turns out that the error which we are talking about earlier is the gradient of the loss function with respect to model prediction prediction, $$ \frac{\partial loss}{\partial pred} $$. Think about the squared error loss function, $$ 0.5 (y_{true}-y_{pred})^2 $$. When we differentiate that, we get $$ y_{pred}-y_{true} $$ which uncoincidentally happens to be the "error" which we train our new error-predicting models to predict. Similarly, errors for other types of predictive problems such as classification problems can be expressed via the gradient.
 
-Mathematically, the derivative of the loss function, $$ \frac{\partial loss}{\partial pred} $$, gives the direction in which the predictions should be adjusted to maximize the loss. In gradient boosting, we predict and adjust our predictions in the opposite (negative gradient) direction. This achieves the opposite (minimize the loss). Since, the loss of a model inversely relates to its performance and accuracy, doing so improves its performance. {% marginnote 'sn-three' 'You can also think about this as a form of Gradient Descend.'%} 
+Mathematically, the derivative of the loss function, $$ \frac{\partial loss}{\partial pred} $$, gives the direction in which the predictions can be adjusted to maximize loss. In gradient boosting, we predict and adjust our predictions in the opposite (negative gradient) direction. This achieves the opposite (minimize the loss). Since, the loss of a model inversely relates to its performance and accuracy, doing so improves its performance. {% marginnote 'sn-three' 'You can also think about this as a form of Gradient Descend.'%} 
 
 Intuitively, we are shifting our model predictions in small steps towards directions which improve the overall performance of our model. 
 
 ## XGBoost
 
-XGBoost is a flavour of gradient boosting machines and Gradient Boosting Trees (gbtree) are the recommended function approximator. In XGBoost, first, we start with a simple predictor, one that predicts any arbitrary number for all values. Next, we apply what <a href="#steps">we've learnt just now</a>>. We train a gbtree to predict the negative gradient and use its output to adjust the original predictions. The combination of the two models forms our new improved model. Then, we apply <a href="#steps">the idea</a> again with the new model until the results are satisfactory. 
+XGBoost is a flavour of gradient boosting machines and Gradient Boosting Trees (gbtree) are the recommended function approximator. 
 
-### Gradient Boosting Trees
+In XGBoost, first, we start with a simple predictor, one that predicts an arbitrary number for all values (usually 0.5). Next, we apply what <a href="#steps">we've learnt just now</a>. We train a gbtree to predict the negative gradient and use its output to adjust the original predictions. The combination of the two models forms our new improved model. Then, we apply <a href="#steps">the idea</a> again on the new model until the results are satisfactory. 
 
-In building a gbtree, we learn train the model such that the overall loss of the current model is minimized while keeping in mind not to *overfit the model*. To do this,
+### Gradient Boosting Tree
+
+In XGBoost, we learn a tree such that the overall loss of the new model is minimized while keeping in mind not to *overfit the model*. To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value for all inputs. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it still helps in decreasing the loss. 
+
+$$
+
+o = \sum_{i \} 
+
+$$
+
+
 
 
 

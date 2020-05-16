@@ -64,9 +64,9 @@ We first start with a simple predictor, one that predicts an arbitrary number fo
 
 ### Gradient Boosting Tree
 
-In XGBoost, we learn a tree whose output can be added to our current prediction such that the overall loss of the new model is minimized while keeping in mind not to *overfit the model*. 
+In XGBoost, we learn a tree whose output can be added to our current prediction such that the overall loss of the new model is minimized while keeping in mind not to *overfit the model*. Note that in this article, we will be talking about the addition of a single tree to improve model.
 
-To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value for all inputs. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing the loss. The problem above can be represented by this equation. 
+To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value regardless of the input. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing the loss. The problem above can be represented by this equation. 
 
 $$
 
@@ -105,13 +105,16 @@ o = \frac{\sum_{i = 1}^N g_i}{\sum_{i = 1}^N h_i + \lambda}
 
 $$
 
-Keep in mind that, now, given a model $$ f $$ and a set of samples, we can find a single adjustment $$ o $$ which can improve our model. Note that $$ o $$ can also be substituted back into the equation to compute the value of $$ Loss $$. The remaining of this section talks about how XGBoost further improves (decrease the loss) by making the simple model more complex (growing the tree). Here's the overall idea. 
+Keep in mind that, now, given a model $$ f $$ and a set of samples, we can find a single adjustment $$ o $$ which can improve our model. Note that $$ o $$ can also be substituted back into the equation to compute the value of $$ Loss $$. The remaining of this section talks about how we can further improve (decrease the loss) by making the simple model more complex (growing the tree). Here's the overall idea. 
 
 >  By cleverly dividing the samples into subgroups and then finding $$ o $$ for each subgroup (using the method above), the performance of the model can be further improved (loss can be brought lower).
 
-The samples can be divided using split conditions. For example, if a split condition is *"feature x less than 10"*, samples whose feature x has value less than 10 will go into 1 subgroup and the rest, to the other group. Each subgroup can be further divided into subgroups using more splits if necessary like a decision tree. For each subgroup, the optimal $$ o $$ can be solved using the above technique. Then, the loss for each subgroup can be computed also be computed accordingly by substituting optimal $$ o $$ back. The overall loss, $$ Loss $$, is the summation of the loss of each subgroup (leaves in the decision tree).
+The samples can be divided using split conditions. For example, if a split condition is *"feature x less than 10"*, samples whose feature x has value less than 10 will go into 1 subgroup and the rest, to the other group. Each subgroup can be further divided iteratively if necessary like a decision tree. For each subgroup, the optimal $$ o $$ can be solved using the above technique. Then, the loss for each subgroup can be computed also be computed accordingly by substituting optimal $$ o $$ back. The overall loss, $$ Loss $$, is the summation of the loss of each subgroup (leaves in the decision tree).
 
-The decisions of whether to split and if so, which split to use depends on whether a split can reduce the overall loss, $$ Loss $$ and how much each split decreases $$ Loss $$ respectively. We always choose the split that decreases $$ Loss $$ the most (improve model the most). 
+At each group or subgroup, the decision of whether to split and if so, which split to use depends on whether a split can reduce the loss of that group and how much each split decreases loss. We choose the split such that the summation of loss of the two new subgroup decreases the loss of the orginal subgroup the most. 
+
+Let's try to describe what's happening here intuitively. You can think of the original model as making different mistakes at different parts of the feature space. What this does is 
+
 
 
 

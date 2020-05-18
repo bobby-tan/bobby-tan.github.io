@@ -48,11 +48,8 @@ A new model will be learned and added into the ensemble everytime we perform an 
 ### "Gradient" Boosting
 
 {% marginnote 'sn-onec' 'When we differentiate the squared error loss function, we get $$ y_{pred}-y_{true} $$ which uncoincidentally happens to be the "error" which we are trying to predict.'%} 
-To end it off, we explore why this is called *"gradient"* boosting. It turns out that the error which we are talking about earlier is the gradient of the loss function $$ wrt $$ model prediction and this is generalizable to any differentiable loss function. Since we are predicting the gradients, we call this gradient boosting.
+To end it off, we explore why this is called *"gradient"* boosting. It turns out that the error which we mentioned earlier can be generalized to the gradient of the loss function $$ wrt $$ model prediction and since we are predicting the gradients, we call this gradient boosting.
 
-Mathematically, the derivative of the loss function, $$ \frac{\partial loss}{\partial pred} $$, gives the direction in which the predictions can be adjusted to maximize loss. In gradient boosting, we predict the other direction (negative gradient) and as result, minimize loss and maximize accuracy.{% marginnote 'sn-three' 'You can also think about this as a form of Gradient Descend.'%} 
-
-Intuitively, we are shifting our model predictions in small steps towards directions which improve the overall performance of our model. 
 
 ## XGBoost
 

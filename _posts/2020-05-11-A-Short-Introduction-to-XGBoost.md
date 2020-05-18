@@ -4,12 +4,12 @@ title: A Short Introduction to Gradient Boosting & XGBoost
 ---
 
 
+
 {% newthought 'In this article' %}, we present a very influential and powerful algorithm called *Extreme Gradient Boosting* or XGBoost. It is an implementation of Gradient Boosting machines which exploits various optimizations to train powerful predictive models very quickly. 
 
 As such, we will first explain *Gradient Boosting* to set readers in context. Then, we walk through the workings of XGBoost qualitatively, drawing connections to gradient boosting concepts as necessary. Finally, we talk about the various optimizations implemented and the ideas behind them. 
 
-In writing this article, I have made it a personal goal to be as concise and as qualitative as possible, bringing in equations only if it aids in the explanation. The goal is to provide readers with an intuition of how Gradient Boosting and XGBoost works. 
-
+The goal of this article is to provide readers with an intuition of how Gradient Boosting and XGBoost works. 
 
 
 ## Gradient Boosting
@@ -53,15 +53,11 @@ To end it off, we explore why this is called *"gradient"* boosting. It turns out
 
 ## XGBoost
 
-XGBoost is a flavour of gradient boosting machines and Gradient Boosting Trees (gbtree) is the recommended function approximator. 
-
-We first start with a simple predictor, one that predicts an arbitrary number for all values (usually 0.5). Then, we apply what <a href="#steps">we've learnt above</a>. {% marginnote 'sn-four' 'In XGBoost, gbtrees are trained in a slightly different manner. It does not involve directly predicting gradients. You will see that later on.'%}In the next section, we explain in further detail, how the trees are learnt. 
+XGBoost is a flavour of gradient boosting machines which uses Gradient Boosting Trees (gbtree) as the error-prediction model. It applies the above idea, starting with a simple predictor, one that predicts an arbitrary number for all values (usually 0.5). However, training of the error prediction model is not done by trivially optimizing the model on  $$ (feature, error) $$ pairs. Let's take a look at how gbtrees are built.
 
 ### Gradient Boosting Tree
 
-In XGBoost, we learn a tree whose output can be added to our current prediction such that the overall loss of the new model is minimized while keeping in mind not to *overfit the model*. Note that in this article, we will be talking about the addition of a single tree to improve model.
-
-To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value regardless of the input. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing the loss. The problem above can be represented by this equation. 
+In XGBoost, a gbtree is learnt such that the overall loss of the new model is minimized while keeping in mind not to *overfit the model*. Note that in this section, we are talking about 1 iteration of the above idea. To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value regardless of the input. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing loss. The problem mentioned can be represented by this equation. 
 
 $$
 
@@ -76,9 +72,8 @@ Loss(o) = \min_{o}  \sum_{i = 1}^N loss(y_i, f(x_i)+o) + \frac{1}{2}\lambda o^2 
 
 $$
 
-This can be solved by differentiating the above expression with respect to $$ o $$, setting the the derivative to 0 and then finding the corresponding $$ o $$.{% marginnote 'sn-five' 'Refer to this <a href="https://towardsdatascience.com/intuitions-on-l1-and-l2-regularisation-235f2db4c261">article</a> for the intuition behind L2 reularization.'%} The $$ \frac{1}{2}\lambda o^2 $$ term is the L2 regularization parameter which has been shown experimentally to be effective in preventing overfitting. While not useful in this already underfitted model, it will come into relevance as we increase the tree complexity.
-
-Now, try to solve for $$ o $$. It turns out that there's no trivial solution as the expression above is hard to differentiate. To resolve this problem, we simplify the expression using the Sterling's approximation. We now represent the above objective function as $$ Loss $$, with the capital L.
+{% marginnote 'sn-five' 'Refer to this <a href="https://towardsdatascience.com/intuitions-on-l1-and-l2-regularisation-235f2db4c261">article</a> for the intuition behind L2 reularization.'%}
+The $$ \frac{1}{2}\lambda o^2 $$ term is the L2 regularization parameter which has been shown experimentally to be effective in preventing overfitting. While not useful in this already underfitted model, it will come into relevance as we increase the tree complexity. A problem like this can be solved by differentiating the expression $$ wrt\ o $$, setting the the derivative to 0 and then finding the corresponding $$ o $$. Unfortunately, the expression we see is hard to differentiate. We get around this using the Sterling's approximation, approximating the above equation with the following.
 
 $$
 
@@ -92,7 +87,7 @@ where\ g_i = \frac{\partial loss}{\partial \widehat{y}}(y_i, f(x_i)) \ and\ h_i=
 
 $$
 
-This simplified expression can be differentiated easily and after setting the derivative to 0, we can solve and obtain $$ o $$. It turns out that $$ o $$ is the following. We will not solve it here for the sake of conciseness. 
+This simplified expression can be differentiated easily and after setting the derivative to 0, we can solve and obtain $$ o $$. It turns out that $$ o $$ is the following. 
 
 $$
 

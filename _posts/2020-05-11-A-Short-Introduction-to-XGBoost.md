@@ -109,12 +109,15 @@ Keep in mind that, now, given a model $$ f $$ and a set of samples, we can find 
 
 >  By cleverly dividing the samples into subgroups and then finding $$ o $$ for each subgroup (using the method above), the performance of the model can be further improved (loss can be brought lower).
 
-The samples can be divided using split conditions. For example, if a split condition is *"feature x less than 10"*, samples whose feature x has value less than 10 will go into 1 subgroup and the rest, to the other group. Each subgroup can be further divided iteratively if necessary like a decision tree. For each subgroup, the optimal $$ o $$ can be solved using the above technique. Then, the loss for each subgroup can be computed also be computed accordingly by substituting optimal $$ o $$ back. The overall loss, $$ Loss $$, is the summation of the loss of each subgroup (leaves in the decision tree).
+The samples can be divided using split conditions. For example, if a split condition is *"feature x less than 10"*, samples whose feature x has value less than 10 will go into 1 subgroup and the rest, to the other group. Each subgroup can be further divided iteratively if necessary (like a decision tree). {% marginnote 'sn-six' 'The minimum loss for a subgroup can be computed by substituting optimal $$ o $$ into $$ Loss $$.'%} For each subgroup, its optimal $$ o $$ and loss can be solved using the above technique. The overall loss, $$ Loss $$, is the summation of the loss of each subgroup (leaves in the decision tree).
 
-At each group or subgroup, the decision of whether to split and if so, which split to use depends on whether a split can reduce the loss of that group and how much each split decreases loss. We choose the split such that the summation of loss of the two new subgroup decreases the loss of the orginal subgroup the most. 
+At each group or subgroup, the decision of whether to split and if so, which split to use depends on whether a split can reduce the loss of that group and how much each split decreases loss. We choose the split which minimizes $$ Loss $$. 
 
-Let's try to describe what's happening here intuitively. You can think of the original model as making different mistakes at different parts of the feature space. What this does is 
+Let's describe what's happening intuitively. The current model has different levels of error for different parts of the feature space. It overpredict for some samples, underpredicts others and by varying magnitudes. *By segmenting the feature space such that the errors in each subgroup is similar, the errors can be predicted more accurately, enhancing model performance.*
 
+### Overfitting
+
+To prevent model overfitting, the height of trees are limited, limiting the number of subgroups which can be formed. Also, the decrease in loss from a split must exceed a certain threshold for XGBoost to allow it. This is modelled into the $$ Loss $$ via an additional regualarization term, $$ \gamma T\ where\ T\ is\ the\ number\ of\ leaves $$ which was ommited earlier on to prevent confusion. 
 
 
 

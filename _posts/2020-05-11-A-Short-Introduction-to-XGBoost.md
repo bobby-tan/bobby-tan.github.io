@@ -3,9 +3,6 @@ layout: article
 title: A Short Introduction to Gradient Boosting & XGBoost
 ---
 
-$$
-\DeclareMathOperator{\diag}{diag}
-$$
 
 {% newthought 'In this article' %}, we present a very influential and powerful algorithm called *Extreme Gradient Boosting* or XGBoost. It is an implementation of Gradient Boosting machines which exploits various optimizations to train powerful predictive models very quickly. 
 
@@ -118,6 +115,10 @@ Let's describe what's happening intuitively. The current model has different lev
 ### Overfitting
 
 To prevent model overfitting, the height of trees are limited, limiting the number of subgroups which can be formed. Also, the decrease in loss from a split must exceed a certain threshold for XGBoost to allow it. This is modelled into the $$ Loss $$ via an additional regualarization term, $$ \gamma T\ where\ T\ is\ the\ number\ of\ leaves $$ which was ommited earlier on to prevent confusion. 
+
+
+## Optimizations
+
 
 
 

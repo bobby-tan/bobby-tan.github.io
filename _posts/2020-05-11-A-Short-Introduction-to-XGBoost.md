@@ -1,6 +1,6 @@
 ---
 layout: article
-title: An Introduction to Gradient Boosting & XGBoost
+title: The Intuition Behind Gradient Boosting & XGBoost
 ---
 
 {% newthought 'In this article' %}, we present a very influential and powerful algorithm called *Extreme Gradient Boosting* or XGBoost. It is an implementation of Gradient Boosting machines which exploits various optimizations to train powerful predictive models very quickly. 
@@ -26,20 +26,28 @@ Now, given any predictive model, we can improve its accuracy by first, training 
 
 {% marginnote 'sn-onea' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}When trainining a new error-predicting model to predict a model's current errors, we regularize its complexity to prevent *overfitting*. This regularized model will have *'errors'* in predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on the new error-predicting model's prediction, it will still have errors albeit lower.
 
-To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error-predicting model by applying a small weight, *$$ \alpha $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error-prediction models for newly formed improved models till the accuracy or error is satisfactory. This is summed up using the equations below.
+To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error-predicting model by applying a small weight, *$$ \eta $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error-prediction models for newly formed improved models till the accuracy or error is satisfactory. This is summed up using the equations below.
 
 {% marginnote 'sn-two' 'Typically, the error-predicting model predicts the current negative error and so, we use an addition instead of deduction.'%}
 <p id="steps"></p>>
 
 $$
 \begin{align*}
-&improved\_model(x) = current\_model(x) + \alpha \times error\_pred\_model(x)\\~\\
+&improved\_model(x) = current\_model(x) + \eta \times error\_pred\_model(x)\\~\\
 &current\_model(x) = improved\_model(x)\\~\\
 &Repeat \ above \ 2 \ steps \ till \ satisfactory.
 \end{align*}
 $$
 
-A new model will be learned and added into the ensemble everytime we perform an iteration. The number of iterations to perform and *$$ \alpha $$* are hyperparameters. 
+A new model will be learned and added into the ensemble everytime we perform an iteration. The number of iterations to perform and *$$ \eta $$* are hyperparameters. 
+
+$$
+
+\\
+
+$$
+
+{% maincolumn 'assets/img/xgboost_1.png' 'If your idea of <em>Gradient Boosting</em> resembles the illustration, you are on the right track.' %}
 
 ### "Gradient" Boosting
 
@@ -129,7 +137,7 @@ Here are interesting optimizations used by XGBoost to increase training speed an
 Cheers, we have reached the end. Hopefully, it has helped you. Feel free to E-mail me (liangweitan300895@gmail.com) for feedbacks, questions or even a chat.
 
 
-
+# remember two figures. 1. To show GBoost idea 2. to show how the tree works. 1 image on the original 1 output eg. then show the one with many. then do grammar checks. 
 
 
 

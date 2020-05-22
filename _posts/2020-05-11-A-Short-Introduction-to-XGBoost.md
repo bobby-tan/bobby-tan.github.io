@@ -3,7 +3,7 @@ layout: article
 title: The Intuition Behind Gradient Boosting & XGBoost
 ---
 
-{% newthought 'In this article' %}, we present a very influential and powerful algorithm called *Extreme Gradient Boosting* or XGBoost. It is an implementation of Gradient Boosting machines which exploits various optimizations to train powerful predictive models very quickly. 
+{% newthought 'In this article' %}, we present a very influential and powerful algorithm called *Extreme Gradient Boosting* or XGBoost <a href="#ref_one">[1]</a>. It is an implementation of Gradient Boosting machines which exploits various optimizations to train powerful predictive models very quickly. 
 
 As such, we will first explain *Gradient Boosting* to set readers in context. Then, we walk through the workings of XGBoost qualitatively, drawing connections to gradient boosting concepts as necessary. Finally, we talk about the various optimizations implemented and the ideas behind them. 
 
@@ -136,8 +136,8 @@ Here are interesting optimizations used by XGBoost to increase training speed an
 
 Cheers, we have reached the end. Hopefully, it has helped you. Feel free to E-mail me (liangweitan300895@gmail.com) for feedbacks, questions or even a chat.
 
+[1]<cite id="ref_one">[T. Chen and C. Guestrin, "XGBoost: A Scalable Tree Boosting System," no. arXiv:1603.02754 [cs.LG], 2016.](https://arxiv.org/abs/1603.02754)</cite>
 
-# remember two figures. 1. To show GBoost idea 2. to show how the tree works. 1 image on the original 1 output eg. then show the one with many. then do grammar checks. 
 
 
 

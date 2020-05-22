@@ -102,26 +102,26 @@ The samples can be divided using split conditions. For example, if a split condi
 
 At each group or subgroup, the decision of whether to split and if so, which split to use depends on whether a split can reduce the loss of that group and how much each split decreases loss. We choose the split which minimizes $$ Loss $$. 
 
-Let's describe what's happening intuitively. The current model has different levels of error for different parts of the feature space. It overpredict for some samples, underpredicts others and by varying magnitudes. *By segmenting the feature space such that the errors in each subgroup is similar, the errors can be predicted more accurately, enhancing model performance.*
+Let's describe what's happening intuitively. The current model has different levels of errors in different parts of the feature space. It overpredicts for some samples, underpredicts for others and by varying magnitudes. *By segmenting the feature space such that the errors in each subgroup are similar, more specific and thus, better adjustments can be computed for each subgroup, enhancing overall model performance.*
 
 ### Overfitting
 
-To prevent model overfitting, the height of trees are limited, limiting the number of subgroups which can be formed. Also, the decrease in loss from a split must exceed a certain threshold for XGBoost to allow it. This is modelled into the $$ Loss $$ via an additional regualarization term, $$ \gamma T\ where\ T\ is\ the\ number\ of\ leaves $$ which was ommited earlier on to prevent confusion. 
+To prevent model overfitting, the maximum height of trees are limited. This limits the number of subgroups (leaves) which can be formed. Also, the decrease in loss from a split must exceed a certain threshold for XGBoost to allow it. This is modelled into the $$ Loss $$ via an additional regualarization term, $$ \gamma T\ where\ T\ is\ the\ number\ of\ leaves $$ which was ommited earlier on to prevent confusion. 
 
 
 ## Optimizations
 
-The following optimizations improve XGBoost's training speed and accuracy. 
+XGBoost employs many interesting optimizations to increase training speed and accuracy.
 
-- Parallelization 
+**Weighted Quantile Sketch** for finding approximate best split point - An ordinary quantile sketch used by most models divides the data into equally sized bin/quantiles based on their feature values to form a histogram. The tree algorithm then finds an approximate best split by iterating through the boundaries of each quantile. In the weighted quantile sketch, each data point is weighted by its Hessian, $$ h_i $$ and the bins/quantiles are formed such that they have equal weights (instead of points). It can be shown that by doing this, areas of lower confidence will have more quantiles assigned and vice versa. This results in the model being more detailed in its search for areas which require it. 
 
-Out of core computing
+**Parallelization** - 
 
-Sparsity Awareness
+**Hardware Optimizations**
 
-Column and Row Sampling
+**Sparsity Awareness**
 
-Weighted Quantile Sketch
+**Column and Row Sampling**
 
 
 

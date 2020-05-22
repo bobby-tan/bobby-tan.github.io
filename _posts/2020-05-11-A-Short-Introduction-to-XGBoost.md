@@ -119,10 +119,9 @@ Here are interesting optimizations used by XGBoost to increase training speed an
 
 **Sparsity-Aware Split Finding** for handling sparse data - XGBoost handles this sparsity, which may result from missing values or frequent zero entries from one-hot encodings by assigning them a default direction at every node in the tree. The default direction is chosen based on which reduces the $$ Loss $$ more. On top of this, XGBoost ensures that sparse data are not iterated over during the split finding process, preventing unecessary computation.
 
-**Hardware Optimizations** - XGBoost stores the frequently used $$ g_i $$s and $$ h_i $$s in the cache to minimize time required for data access. When disk usage is required (due to data not fitting into memory), the data is compressed before storage, reducing the IO cost involved at the expense of some compression computation. If multiple disks exist, the data can be sharded to increase disk reading throughtput.
+**Hardware Optimizations** - XGBoost stores the frequently used $$ g_i $$s and $$ h_i $$s in the cache to minimize data access cost. When disk usage is required (due to data not fitting into memory), the data is compressed before storage, reducing the IO cost involved at the expense of some compression computation. If multiple disks exist, the data can be sharded to increase disk reading throughtput.
 
-**Column and Row Sampling**
-
+**Column and Row Subsampling** - To reduce training time, XGBoost provides the option of training every tree with only a randomly sampled subset of the original data rows where the size of this subset is determined by the user. The same applies to the columns/features of the dataset. Apart from savings in training time, subsampling the columns during training has the effect of decorrelating the trees which can reduce overfitting and boost model performance. This idea is also used in the Random Forest algorithm. 
 
 
 

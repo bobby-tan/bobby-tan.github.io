@@ -115,9 +115,9 @@ Here are interesting optimizations used by XGBoost to increase training speed an
 
 **Weighted Quantile Sketch** for finding approximate best split - Before finding the best split, we form a histogram for each feature. The boundaries of the histogram bins are then used as candidate points for finding the best split. In the Weighted Quantile Sketch, the data points are assigned weights based on the "confidence" of their current predictions and the histograms are built such that each bin has approximately the same total weight (as opposed to the same number of points in the traditional quantile sketch). As a result, more candidate points and thus, a more detailed search will exist in areas where the model is doing poorly.
 
-**Parallelization** in tree building process - When finding optimal splits, the trying of candidate points can be parallelized at the feature/column level. For example, we can let core 1 find the best split point and its correspoinding loss for *feature A* and have core 2 do the same for *feature B*. In the end, we compare the losses and use the best one as the split point. 
+**Parallelization** for faster tree building process - When finding optimal splits, the trying of candidate points can be parallelized at the feature/column level. For example, core 1 can be finding the best split point and its correspoinding loss for *feature A* while core 2 can be doing the same for *feature B*. In the end, we compare the losses and use the best one as the split point.
 
-**Sparsity Awareness**
+**Sparsity-Aware Split Finding** for handling sparse data - XGBoost handles this sparsity, which may result from missing values or frequent zero entries from one-hot encodings by assigning them a default direction at every node in the tree. The default direction is chosen based on which reduces the $$ Loss $$ more. On top of this, XGBoost ensures that sparse data are not iterated over during the split finding process, preventing unecessary computation.
 
 **Hardware Optimizations** - 
 

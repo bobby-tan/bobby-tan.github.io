@@ -111,19 +111,15 @@ To prevent model overfitting, the maximum height of trees are limited. This limi
 
 ## Optimizations
 
-Here are some interesting optimizations used by XGBoost to increase training speed and accuracy.
+Here are interesting optimizations used by XGBoost to increase training speed and accuracy.
 
 **Weighted Quantile Sketch** for finding approximate best split - Before finding the best split, we form a histogram for each feature. The boundaries of the histogram bins are then used as candidate points for finding the best split. In the Weighted Quantile Sketch, the data points are assigned weights based on the "confidence" of their current predictions and the histograms are built such that each bin has approximately the same total weight (as opposed to the same number of points in the traditional quantile sketch). As a result, more candidate points and thus, a more detailed search will exist in areas where the model is doing poorly.
 
-
-
-
-
-**Parallelization** - 
-
-**Hardware Optimizations**
+**Parallelization** in tree building process - When finding optimal splits, the trying of candidate points can be parallelized at the feature/column level. For example, we can let core 1 find the best split point and its correspoinding loss for *feature A* and have core 2 do the same for *feature B*. In the end, we compare the losses and use the best one as the split point. 
 
 **Sparsity Awareness**
+
+**Hardware Optimizations** - 
 
 **Column and Row Sampling**
 

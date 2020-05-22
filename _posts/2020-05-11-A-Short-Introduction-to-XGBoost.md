@@ -111,7 +111,17 @@ To prevent model overfitting, the height of trees are limited, limiting the numb
 
 ## Optimizations
 
+The following optimizations improve XGBoost's training speed and accuracy. 
 
+- Parallelization 
+
+Out of core computing
+
+Sparsity Awareness
+
+Column and Row Sampling
+
+Weighted Quantile Sketch
 
 
 

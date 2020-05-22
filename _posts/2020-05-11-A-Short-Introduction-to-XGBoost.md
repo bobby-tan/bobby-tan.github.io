@@ -1,6 +1,6 @@
 ---
 layout: article
-title: A Short Introduction to Gradient Boosting & XGBoost
+title: An Introduction to Gradient Boosting & XGBoost
 ---
 
 {% newthought 'In this article' %}, we present a very influential and powerful algorithm called *Extreme Gradient Boosting* or XGBoost. It is an implementation of Gradient Boosting machines which exploits various optimizations to train powerful predictive models very quickly. 
@@ -123,6 +123,10 @@ Here are interesting optimizations used by XGBoost to increase training speed an
 
 **Column and Row Subsampling** - To reduce training time, XGBoost provides the option of training every tree with only a randomly sampled subset of the original data rows where the size of this subset is determined by the user. The same applies to the columns/features of the dataset. Apart from savings in training time, subsampling the columns during training has the effect of decorrelating the trees which can reduce overfitting and boost model performance. This idea is also used in the Random Forest algorithm. 
 
+
+##  End Note and References
+
+Cheers, we have reached the end. Hopefully, it has helped you. Feel free to E-mail me (liangweitan300895@gmail.com) for feedbacks, questions or even a chat.
 
 
 

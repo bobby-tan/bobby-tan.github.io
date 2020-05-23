@@ -27,9 +27,10 @@ Now, given any predictive model, we can improve its accuracy by first, training 
 
 When trainining a new error-predicting model to predict a model's current errors, we regularize its complexity to prevent *overfitting*{% sidenote 'sn-two' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}. This regularized model will have *'errors'* when predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on the new error-predicting model's prediction, it too, will have errors albeit lower than before.
 
-To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error predictor by applying a small weight, *$$ \eta $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error predictors for newly formed improved models till the accuracy or error is satisfactory. This is summed up using the equations below.
+To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error predictor by applying a small weight, *$$ \eta $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error predictors for newly formed improved models till the accuracy or error is satisfactory. This is summed up using the equations below where $$ x $$ is an input.
 
 {% marginnote 'sn-three' 'Typically, the error-predicting model predicts the negative error and so, we use an addition instead of deduction.'%}
+
 <p id="steps"></p>
 
 $$
@@ -57,11 +58,11 @@ Intuitively, we are shifting our model predictions in small steps towards direct
 
 ## XGBoost
 
-XGBoost is a flavour of gradient boosting machines which uses Gradient Boosting Trees (gbtree) as the error-prediction model. It applies the above idea, starting with a simple predictor, one that predicts an arbitrary number for all values (usually 0.5). However, training of the error prediction model is not done by trivially optimizing the model on  $$ (feature, error) $$ pairs. Let's take a look at how gbtrees are built.
+XGBoost is a flavour of gradient boosting machines which uses Gradient Boosting Trees (gbtree) as the error predictor. It starts off with a simple predictor which predicts an arbitrary number (usually 0.5) regardless of the input. Needless to say, that predictor has a very high error rate. Then, the <a href="#steps">above idea</a> is applied till the error is brought to a minimum. In XGBoost, training of the error prediction model is not done by trivially optimizing the predictor on  $$ (feature, error) $$ pairs. Next, let's take a look at how they are built.
 
 ### Gradient Boosting Tree
 
-In XGBoost, a gbtree is learnt such that the overall loss of the new model is minimized while keeping in mind not to *overfit the model*. Note that in this section, we are talking about 1 iteration of the above idea. To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value regardless of the input. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing loss. The problem mentioned can be represented by this equation. 
+In XGBoost, a gbtree is learnt such that the overall loss of the new model is minimized while keeping in mind not to *overfit* the model. Note that in this section, we are talking about 1 iteration of the above idea. To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value regardless of the input. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing loss. The problem mentioned can be represented by the equations below. 
 
 $$
 
@@ -74,10 +75,11 @@ Loss(o) = \min_{o}  \sum_{i = 1}^N loss(y_i, f(x_i)+o) + \frac{1}{2}\lambda o^2 
 &\lambda \ is\ the\ L2\ regularization\ parameter\ and\ o\ is\ the\ value\ which\ we\ want\ to\ find.
 \end{align*}
 
+~ \\ ~ \\ 
+
 $$
 
-{% marginnote 'sn-five' 'Refer to this <a href="https://towardsdatascience.com/intuitions-on-l1-and-l2-regularisation-235f2db4c261">article</a> for the intuition behind L2 reularization.'%}
-The $$ \frac{1}{2}\lambda o^2 $$ term is the L2 regularization parameter which has been shown experimentally to be effective in preventing overfitting. While not useful in this already underfitted model, it will come into relevance as we increase the tree complexity. A problem like this can be solved by differentiating the expression $$ wrt\ o $$, setting the the derivative to 0 and then finding the corresponding $$ o $$. Unfortunately, the expression we see is hard to differentiate. We get around this using the Sterling's approximation, approximating the above equation with the following.
+The L2 regularization{% sidenote 'sn-five' 'Refer to this <a href="https://towardsdatascience.com/intuitions-on-l1-and-l2-regularisation-235f2db4c261">article</a> for an explanation about L2 reularization.'%} applied, as represented by the $$ \frac{1}{2}\lambda o^2 $$ term, has been shown experimentally to be effective in preventing overfitting. While not useful in this already underfitted model, it will come into relevance as we increase the tree complexity. A problem like this can be solved by differentiating the expression $$ wrt\ o $$, setting the the derivative to 0 and then finding the corresponding $$ o $$. Unfortunately, the expression we see above is hard to differentiate. To get around this, we approximate that expression with simpler terms using Quadratic Approximation{% sidenote 'sn-five' 'You can watch this <a href="https://www.khanacademy.org/math/multivariable-calculus/applications-of-multivariable-derivatives#quadratic-approximations">Khan Academy series</a> to understand Quadratic Approximation and do the derivation as an exercise.'%}. 
 
 $$
 
@@ -89,29 +91,37 @@ Loss(o) \approx  \sum_{i = 1}^N [loss(y_i, f(x_i)) + \frac{\partial loss}{\parti
 
 where\ g_i = \frac{\partial loss}{\partial \widehat{y}}(y_i, f(x_i)) \ and\ h_i=\frac{\partial^2 loss}{\partial \widehat{y}^2}(y_i, f(x_i)).
 
+~ \\ ~ \\ 
+
 $$
 
 This simplified expression can be differentiated easily and after setting the derivative to 0, we can solve and obtain $$ o $$. It turns out that $$ o $$ is the following. 
 
+{% marginfigure 'mf-1' 'assets/img/Figure 2.png' 'An illustration of the scenario given: We find a single best adjustment $$ o $$ which we can apply to any sample in our dataset to minimize overall loss.' %}
+
 $$
+
+~ \\ ~ \\ 
 
 o = \frac{\sum_{i = 1}^N g_i}{\sum_{i = 1}^N h_i + \lambda}
 
+~ \\ ~ \\ 
+
 $$
 
-Keep in mind that, now, given a model $$ f $$ and a set of samples, we can find a single adjustment $$ o $$ which can improve our model. Note that $$ o $$ can also be substituted back into the equation to compute the value of $$ Loss $$. The remaining of this section talks about how we can further improve (decrease the loss) by making the simple model more complex (growing the tree). Here's the overall idea. 
+Keep in mind that, now, given a model $$ f $$ and a set of samples, we can find a single adjustment $$ o $$ which best improves our model. <a id="note_1"></a>*Note that $$ o $$ can also be substituted back into the equation to compute the value of $$ Loss $$.* The remaining of this section talks about how we can further improve (decrease the loss) by increasing the complexity of our simple model (growing the tree). Here's the overall idea. 
 
 >  By cleverly dividing the samples into subgroups and then finding $$ o $$ for each subgroup (using the method above), the performance of the model can be further improved (loss can be brought lower).
 
-The samples can be divided using split conditions. For example, if a split condition is *"feature x less than 10"*, samples whose feature x has value less than 10 will go into 1 subgroup and the rest, to the other group. Each subgroup can be further divided iteratively if necessary (like a decision tree). {% marginnote 'sn-six' 'The minimum loss for a subgroup can be computed by substituting optimal $$ o $$ into $$ Loss $$.'%} For each subgroup, its optimal $$ o $$ and loss can be solved using the above technique. The overall loss, $$ Loss $$, is the summation of the loss of each subgroup (leaves in the decision tree).
+The samples can be divided using split conditions. For example, if a split condition is *"feature x less than 10"*, samples whose feature x has value less than 10 will go into 1 subgroup and the rest, to the other group. Each subgroup can be further divided iteratively if necessary. These splits divide the original feature space into smaller subspaces and samples in each subspace form a subgroup. For each subgroup, its optimal $$ o $$ and loss{% sidenote 'sn-six' '<a href="#note_1">Remember</a> that the minimum loss for a subgroup can be computed by substituting optimal $$ o $$ back into $$ Loss $$.'%} can be solved using the above technique. The overall loss, $$ Loss $$, is the summation of the loss of each subgroup (leaves in the decision tree).{% marginfigure 'mf-2' 'assets/img/Figure 3.png' 'An illustration of the discussed concept: In this example, the features space is divided into 3 segments with splits $$ B < 2 $$ and $$ A < 2.5 $$. The optimal $$ o $$ for each subgroup is then computed using the discussed technique.' %}.
 
-At each group or subgroup, the decision of whether to split and if so, which split to use depends on whether a split can reduce the loss of that group and how much each split decreases loss. We choose the split which minimizes $$ Loss $$. 
+At each group or subgroup, the decision of whether to split and if so, which split to use depends on whether a split can reduce the loss of that group and how much each split decreases loss. We always choose the split which minimizes $$ Loss $$ and will not split if $$ Loss $$ cannot be decreased. 
 
 Let's describe what's happening intuitively. The current model has different levels of errors in different parts of the feature space. It overpredicts for some samples, underpredicts for others and by varying magnitudes. *By segmenting the feature space such that the errors in each subgroup are similar, more specific and thus, better adjustments can be computed for each subgroup, enhancing overall model performance.*
 
 ### Overfitting
 
-To prevent model overfitting, the maximum height of trees are limited. This limits the number of subgroups (leaves) which can be formed. Also, the decrease in loss from a split must exceed a certain threshold for XGBoost to allow it. This is modelled into the $$ Loss $$ via an additional regualarization term, $$ \gamma T\ where\ T\ is\ the\ number\ of\ leaves $$ which was ommited earlier on to prevent confusion. 
+To prevent *overfitting*, several measures are implemented. We discuss two important ones here. First, the maximum height of trees grown can be capped by the user. This helps in limitings the number of subgroups (leaves) which can be formed. Second, the decrease in loss from a split must exceed a certain threshold set by the user for XGBoost to allow it. This is modelled into the $$ Loss $$ via an additional regualarization term, $$ \gamma T\ where\ T\ is\ the\ number\ of\ leaves $$. This was ommited earlier on to prevent confusion. 
 
 
 ## Optimizations
@@ -127,11 +137,6 @@ Here are interesting optimizations used by XGBoost to increase training speed an
 **Hardware Optimizations** - XGBoost stores the frequently used $$ g_i $$s and $$ h_i $$s in the cache to minimize data access cost. When disk usage is required (due to data not fitting into memory), the data is compressed before storage, reducing the IO cost involved at the expense of some compression computation. If multiple disks exist, the data can be sharded to increase disk reading throughtput.
 
 **Column and Row Subsampling** - To reduce training time, XGBoost provides the option of training every tree with only a randomly sampled subset of the original data rows where the size of this subset is determined by the user. The same applies to the columns/features of the dataset. Apart from savings in training time, subsampling the columns during training has the effect of decorrelating the trees which can reduce overfitting and boost model performance. This idea is also used in the Random Forest algorithm. 
-
-{% marginfigure 'mf-id-whatever' 'assets/img/Figure 2.png' 'F.J. Cole, “The History of Albrecht Dürer’s Rhinoceros in Zoological Literature,” *Science, Medicine, and History: Essays on the Evolution of Scientific Thought and Medical Practice* (London, 1953), ed. E. Ashworth Underwood, 337-356. From page 71 of Edward Tufte’s *Visual Explanations*.' %}.
-
-{% marginfigure 'mf-id-whatever2' 'assets/img/Figure 3.png' 'F.J. Cole, “The History of Albrecht Dürer’s Rhinoceros in Zoological Literature,” *Science, Medicine, and History: Essays on the Evolution of Scientific Thought and Medical Practice* (London, 1953), ed. E. Ashworth Underwood, 337-356. From page 71 of Edward Tufte’s *Visual Explanations*.' %}.
-
 
 ##  End Note and References
 

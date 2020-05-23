@@ -4,7 +4,7 @@ subtitle:
 author: Bobby Tan
 simple_search: http://google.com/search
 description: Snippets of thought from Bobby
-name: bobbys-notes
+name: Uncle Bobby's Notes
 markdown: kramdown
 markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 permalink: /articles/:short_year/:title

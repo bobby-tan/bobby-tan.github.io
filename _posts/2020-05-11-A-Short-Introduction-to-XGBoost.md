@@ -143,6 +143,7 @@ Here are interesting optimizations used by XGBoost to increase training speed an
 Cheers, we have reached the end. Hopefully, it has helped you. Feel free to E-mail me (liangweitan300895@gmail.com) for feedbacks, questions or even a chat.
 
 [1]<cite id="ref_one">[T. Chen and C. Guestrin, "XGBoost: A Scalable Tree Boosting System," no. arXiv:1603.02754 [cs.LG], 2016.](https://arxiv.org/abs/1603.02754)</cite>
+<br>
 [2]<cite id="ref_two">[J. H. Friedman, "Stochastic Gradient Boosting," 1999](https://statweb.stanford.edu/~jhf/ftp/stobst.pdf)</cite>
 
 

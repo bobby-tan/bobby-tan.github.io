@@ -5,31 +5,32 @@ title: The Intuition Behind Gradient Boosting & XGBoost
 
 {% newthought 'In this article' %}, we present a very influential and powerful algorithm called *Extreme Gradient Boosting* or XGBoost <a href="#ref_one">[1]</a>. It is an implementation of Gradient Boosting machines which exploits various optimizations to train powerful predictive models very quickly. 
 
-As such, we will first explain *Gradient Boosting* to set readers in context. Then, we walk through the workings of XGBoost qualitatively, drawing connections to gradient boosting concepts as necessary. Finally, we talk about the various optimizations implemented and the ideas behind them. 
+As such, we will first explain <a href="#gradient_boosting"><em>Gradient Boosting</em></a> <a href="#ref_two">[2]</a> to set readers in context. Then, we walk through the workings of <a href="#XGBoost">XGBoost</a> qualitatively, drawing connections to gradient boosting concepts as necessary. Finally, we talk about the various <a href="#optimizations">optimizations</a> implemented and the ideas behind them. 
 
 In writing this article, I have made it a personal goal to be as qualitative as possible, bringing in equations only if it aids in the explanation. The goal of is to provide readers with an intuition of how Gradient Boosting and XGBoost works. 
 
-## Gradient Boosting
+<h2 id="gradient_boosting">Gradient Boosting</h2>
 
 Gradient Boosting involves building an ensemble of weak learners. It builds upon 2 key insights. Here's insight one.
 
 >If we can account for our model's errors, we will be able to improve our model's performance.
 
-<p id="example"></p>
-Let's use a simple example to back this idea. Let's say we have a regressive model which predicts 3 for a test case whose actual outcome is 1. If we know the error (2 in the given example), we can fine-tune the prediction by subtracting the error, 2 ,from the original prediction, 3 and obtain a more accurate prediction of 1. This begs the question, *"How do we know the error made by our model for any given input?"*, which leads us to our second insight.
+<p id="example">
+Let's use a simple example to back this idea. Let's say we have a regressive model which predicts 3 for a test case whose actual outcome is 1. If we know the error (2 in the given example), we can fine-tune the prediction by subtracting the error, 2 ,from the original prediction, 3 and obtain a more accurate prediction of 1. This begs the question, <em>"How do we know the error made by our model for any given input?"</em>, which leads us to our second insight.
+</p>
 
->We can train a new model to predict the errors made by the original model.
+>We can train a new predictor to predict the errors made by the original model.
 
-Now, given any predictive model, we can improve its accuracy by first, training a new model to predict its current errors.{% marginnote 'sn-zero' 'The model used to predict the error can be any function approximator.'%}Then, forming a new improved model whose output is the fine-tuned version of the original prediction. The improved model, which requires the outputs of both the *original model* and the *error-predicting model*, is now considered an ensemble of the two. In gradient boosting, this is repeated arbitrary number of times to continually improve the model's accuracy. This repeated process forms the crux of gradient boosting.
+Now, given any predictive model, we can improve its accuracy by first, training a new predictor{% sidenote 'sn-one' 'The predictor used to predict the error can be any function approximator.'%} to predict its current errors. Then, forming a new improved model whose output is the fine-tuned version of the original prediction. The improved model, which requires the outputs of both the *original predictor* and the *error predictor*, is now considered an ensemble of the two predictors. In gradient boosting, this is repeated arbitrary number of times to continually improve the model's accuracy. This repeated process forms the crux of gradient boosting.
 
 ### An Ensemble of Weak Learners
 
-{% marginnote 'sn-onea' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}When trainining a new error-predicting model to predict a model's current errors, we regularize its complexity to prevent *overfitting*. This regularized model will have *'errors'* in predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on the new error-predicting model's prediction, it will still have errors albeit lower.
+When trainining a new error-predicting model to predict a model's current errors, we regularize its complexity to prevent *overfitting*{% sidenote 'sn-two' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}. This regularized model will have *'errors'* when predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on the new error-predicting model's prediction, it too, will have errors albeit lower than before.
 
-To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error-predicting model by applying a small weight, *$$ \eta $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error-prediction models for newly formed improved models till the accuracy or error is satisfactory. This is summed up using the equations below.
+To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error predictor by applying a small weight, *$$ \eta $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error predictors for newly formed improved models till the accuracy or error is satisfactory. This is summed up using the equations below.
 
-{% marginnote 'sn-two' 'Typically, the error-predicting model predicts the current negative error and so, we use an addition instead of deduction.'%}
-<p id="steps"></p>>
+{% marginnote 'sn-three' 'Typically, the error-predicting model predicts the negative error and so, we use an addition instead of deduction.'%}
+<p id="steps"></p>
 
 $$
 \begin{align*}
@@ -39,19 +40,15 @@ $$
 \end{align*}
 $$
 
-A new model will be learned and added into the ensemble everytime we perform an iteration. The number of iterations to perform and *$$ \eta $$* are hyperparameters. 
+After every iteration, a new predictor accounting for the errors of the previous model will be learned and added into the ensemble. The number of iterations to perform and *$$ \eta $$* are hyperparameters. 
 
-$$
-
-\\
-
-$$
+<br>
 
 {% maincolumn 'assets/img/xgboost_1.png' 'If your idea of <em>Gradient Boosting</em> resembles the illustration, you are on the right track.' %}
 
 ### "Gradient" Boosting
 
-To end it off, we explore why this is called *"gradient"* boosting. It turns out that the error which we mentioned above is the gradient of the loss function $$ wrt $$ model prediction and this is generalizable to any differentiable loss function. Think about the squared error loss function, $$ 0.5 (y_{true}-y_{pred})^2 $$. When we differentiate that, we get $$ y_{pred}-y_{true} $$ which uncoincidentally happens to be the "error" which we train our new error-predicting models to predict. Similarly, errors for other types of predictive problems such as classification problems can be expressed via the gradient. Since we are predicting the gradients, we call this gradient boosting. 
+Before ending off, we explore why this is called *"gradient"* boosting. It turns out that the error which we mentioned above is the gradient of the loss function $$ wrt $$ the model prediction and this is generalizable to any differentiable loss function. Think about the squared error loss function, $$ 0.5 (y_{true}-y_{pred})^2 $$. When we differentiate that, we get $$ y_{pred}-y_{true} $$ which uncoincidentally happens to be the "error" which we train our new error-predicting models to predict. Similarly, errors for other types of predictive problems such as classification problems can be expressed via the gradient. Since we are predicting the gradients, we call this gradient boosting. 
 
 Mathematically, the derivative of the loss function, $$ \frac{\partial loss}{\partial pred} $$, gives the direction in which the predictions can be adjusted to maximize loss. In gradient boosting, we predict and adjust our predictions in the opposite (negative gradient) direction. This achieves the opposite (minimize the loss). Since, the loss of a model inversely relates to its performance and accuracy, doing so improves its performance. {% marginnote 'sn-three' 'You can also think about this as a form of Gradient Descend.'%} 
 
@@ -141,6 +138,7 @@ Here are interesting optimizations used by XGBoost to increase training speed an
 Cheers, we have reached the end. Hopefully, it has helped you. Feel free to E-mail me (liangweitan300895@gmail.com) for feedbacks, questions or even a chat.
 
 [1]<cite id="ref_one">[T. Chen and C. Guestrin, "XGBoost: A Scalable Tree Boosting System," no. arXiv:1603.02754 [cs.LG], 2016.](https://arxiv.org/abs/1603.02754)</cite>
+[2]<cite id="ref_two">[J. H. Friedman, "Stochastic Gradient Boosting," 1999](https://statweb.stanford.edu/~jhf/ftp/stobst.pdf)</cite>
 
 
 

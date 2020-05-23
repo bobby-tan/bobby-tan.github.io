@@ -16,7 +16,7 @@ Gradient Boosting involves building an ensemble of weak learners. It builds upon
 >If we can account for our model's errors, we will be able to improve our model's performance.
 
 <p id="example">
-Let's use a simple example to back this idea. Let's say we have a regressive model which predicts 3 for a test case whose actual outcome is 1. If we know the error (2 in the given example), we can fine-tune the prediction by subtracting the error, 2 ,from the original prediction, 3 and obtain a more accurate prediction of 1. This begs the question, <em>"How do we know the error made by our model for any given input?"</em>, which leads us to our second insight.
+Let's use a simple example to back this idea. Let's say we have a regressive model which predicts 3 for a test case whose actual outcome is 1. If we know the error (2 in the given example), we can fine-tune the prediction by subtracting the error, 2,from the original prediction, 3 and obtain a more accurate prediction of 1. This begs the question, <em>"How do we know the error made by our model for any given input?"</em>, which leads us to our second insight.
 </p>
 
 >We can train a new predictor to predict the errors made by the original model.
@@ -25,7 +25,7 @@ Now, given any predictive model, we can improve its accuracy by first, training 
 
 ### An Ensemble of Weak Learners
 
-When trainining a new error-predicting model to predict a model's current errors, we regularize its complexity to prevent *overfitting*{% sidenote 'sn-two' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}. This regularized model will have *'errors'* when predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on the new error-predicting model's prediction, it too, will have errors albeit lower than before.
+When training a new error-predicting model to predict a model's current errors, we regularize its complexity to prevent *overfitting*{% sidenote 'sn-two' 'A model which memorizes the errors for all of its training samples will have no use in the practical scenario.'%}. This regularized model will have *'errors'* when predicting the original model's *'errors'*. With reference to the <a href="#example">above example</a>, it might not necessarily predict 2. Since the new improved model's prediction depends on the new error-predicting model's prediction, it too will have errors albeit lower than before.
 
 To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error predictor by applying a small weight, *$$ \eta $$* (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error predictors for newly formed improved models till the accuracy or error is satisfactory. This is summed up using the equations below where $$ x $$ is an input.
 
@@ -62,7 +62,7 @@ XGBoost is a flavour of gradient boosting machines which uses Gradient Boosting 
 
 ### Gradient Boosting Tree
 
-In XGBoost, a gbtree is learnt such that the overall loss of the new model is minimized while keeping in mind not to *overfit* the model. Note that in this section, we are talking about 1 iteration of the above idea. To understand it better, let's start from the simplest possble tree which makes no split and predicts the same value regardless of the input. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing loss. The problem mentioned can be represented by the equations below. 
+In XGBoost, a gbtree is learnt such that the overall loss of the new model is minimized while keeping in mind not to *overfit* the model. Note that in this section, we are talking about 1 iteration of the above idea. To understand it better, let's start from the simplest possible tree which makes no split and predicts the same value regardless of the input. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing loss. The problem mentioned can be represented by the equations below. 
 
 $$
 
@@ -79,7 +79,7 @@ Loss(o) = \min_{o}  \sum_{i = 1}^N loss(y_i, f(x_i)+o) + \frac{1}{2}\lambda o^2 
 
 $$
 
-The L2 regularization{% sidenote 'sn-five' 'Refer to this <a href="https://towardsdatascience.com/intuitions-on-l1-and-l2-regularisation-235f2db4c261">article</a> for an explanation about L2 reularization.'%} applied, as represented by the $$ \frac{1}{2}\lambda o^2 $$ term, has been shown experimentally to be effective in preventing overfitting. While not useful in this already underfitted model, it will come into relevance as we increase the tree complexity. A problem like this can be solved by differentiating the expression $$ wrt\ o $$, setting the the derivative to 0 and then finding the corresponding $$ o $$. Unfortunately, the expression we see above is hard to differentiate. To get around this, we approximate that expression with simpler terms using Quadratic Approximation{% sidenote 'sn-five' 'You can watch this <a href="https://www.khanacademy.org/math/multivariable-calculus/applications-of-multivariable-derivatives#quadratic-approximations">Khan Academy series</a> to understand Quadratic Approximation and do the derivation as an exercise.'%}. 
+The L2 regularization{% sidenote 'sn-five' 'Refer to this <a href="https://towardsdatascience.com/intuitions-on-l1-and-l2-regularisation-235f2db4c261">article</a> for an explanation about L2 regularization.'%} applied, as represented by the $$ \frac{1}{2}\lambda o^2 $$ term, has been shown experimentally to be effective in preventing overfitting. While not useful in this already underfitted model, it will come into relevance as we increase the tree complexity. A problem like this can be solved by differentiating the expression $$ wrt\ o $$, setting the derivative to 0 and then finding the corresponding $$ o $$. Unfortunately, the expression we see above is hard to differentiate. To get around this, we approximate that expression with simpler terms using Quadratic Approximation{% sidenote 'sn-five' 'You can watch this <a href="https://www.khanacademy.org/math/multivariable-calculus/applications-of-multivariable-derivatives#quadratic-approximations">Khan Academy series</a> to understand Quadratic Approximation and do the derivation as an exercise.'%}. 
 
 $$
 

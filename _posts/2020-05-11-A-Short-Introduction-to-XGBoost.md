@@ -132,15 +132,15 @@ Here are interesting optimizations used by XGBoost to increase training speed an
 
 **Parallelization** for faster tree building process - When finding optimal splits, the trying of candidate points can be parallelized at the feature/column level. For example, core 1 can be finding the best split point and its correspoinding loss for *feature A* while core 2 can be doing the same for *feature B*. In the end, we compare the losses and use the best one as the split point.
 
-**Sparsity-Aware Split Finding** for handling sparse data - XGBoost handles this sparsity, which may result from missing values or frequent zero entries from one-hot encodings by assigning them a default direction at every node in the tree. The default direction is chosen based on which reduces the $$ Loss $$ more. On top of this, XGBoost ensures that sparse data are not iterated over during the split finding process, preventing unecessary computation.
+**Sparsity-Aware Split Finding** for handling sparse data - XGBoost handles this sparsity, which may result from missing values or frequent zero entries from one-hot encodings by assigning them a default direction at every node in the tree. The default direction is chosen based on which reduces the $$ Loss $$ more. On top of this, XGBoost ensures that sparse data are not iterated over during the split finding process, preventing uneccessary computation.
 
-**Hardware Optimizations** - XGBoost stores the frequently used $$ g_i $$s and $$ h_i $$s in the cache to minimize data access cost. When disk usage is required (due to data not fitting into memory), the data is compressed before storage, reducing the IO cost involved at the expense of some compression computation. If multiple disks exist, the data can be sharded to increase disk reading throughtput.
+**Hardware Optimizations** - XGBoost stores the frequently used $$ g_i $$s and $$ h_i $$s in the cache to minimize data access cost. When disk usage is required (due to data not fitting into memory), the data is compressed before storage, reducing the IO cost involved at the expense of some compression computation. If multiple disks exist, the data can be <a href="https://en.wikipedia.org/wiki/Shard_(database_architecture)">sharded</a> to increase disk reading throughtput.
 
-**Column and Row Subsampling** - To reduce training time, XGBoost provides the option of training every tree with only a randomly sampled subset of the original data rows where the size of this subset is determined by the user. The same applies to the columns/features of the dataset. Apart from savings in training time, subsampling the columns during training has the effect of decorrelating the trees which can reduce overfitting and boost model performance. This idea is also used in the Random Forest algorithm. 
+**Column and Row Subsampling** - To reduce training time, XGBoost provides the option of training every tree with only a randomly sampled subset of the original data rows where the size of this subset is determined by the user. The same applies to the columns/features of the dataset. Apart from savings in training time, subsampling the columns during training has the effect of decorrelating the trees which can reduce overfitting and boost model performance. This idea is also used in the Random Forest{% sidenote 'sn-seven' '<a href="https://en.wikipedia.org/wiki/Random_forest">https://en.wikipedia.org/wiki/Random_forest</a>'%} algorithm. 
 
 ##  End Note and References
 
-Cheers, we have reached the end. Hopefully, it has helped you. Feel free to E-mail me (liangweitan300895@gmail.com) for feedbacks, questions or even a chat.
+Cheers, we have reached the end. Hopefully, this has helped you. Feel free to E-mail me (liangweitan300895@gmail.com) for feedbacks, questions or even a chat.
 
 [1]<cite id="ref_one">[T. Chen and C. Guestrin, "XGBoost: A Scalable Tree Boosting System," no. arXiv:1603.02754 [cs.LG], 2016.](https://arxiv.org/abs/1603.02754)</cite>
 <br>

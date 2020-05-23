@@ -7,7 +7,7 @@ title: The Intuition Behind Gradient Boosting & XGBoost
 
 As such, we will first explain <a href="#gradient_boosting"><em>Gradient Boosting</em></a> <a href="#ref_two">[2]</a> to set readers in context. Then, we walk through the workings of <a href="#XGBoost">XGBoost</a> qualitatively, drawing connections to gradient boosting concepts as necessary. Finally, we talk about the various <a href="#optimizations">optimizations</a> implemented and the ideas behind them. 
 
-In writing this article, I have made it a personal goal to be as qualitative as possible, bringing in equations only if it aids in the explanation. The goal of is to provide readers with an intuition of how Gradient Boosting and XGBoost works. 
+In writing this article, I have made it a personal goal to be as qualitative as possible, bringing in equations only if it aids in the explanation. The goal is to provide readers with an intuition of how Gradient Boosting and XGBoost works. 
 
 <h2 id="gradient_boosting">Gradient Boosting</h2>
 

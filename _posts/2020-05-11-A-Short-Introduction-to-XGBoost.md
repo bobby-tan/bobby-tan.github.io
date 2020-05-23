@@ -48,11 +48,11 @@ After every iteration, a new predictor accounting for the errors of the previous
 
 ### "Gradient" Boosting
 
-Before ending off, we explore why this is called *"gradient"* boosting. It turns out that the error which we mentioned above is the gradient of the loss function $$ wrt $$ the model prediction and this is generalizable to any differentiable loss function. Think about the squared error loss function, $$ 0.5 (y_{true}-y_{pred})^2 $$. When we differentiate that, we get $$ y_{pred}-y_{true} $$ which uncoincidentally happens to be the "error" which we train our new error-predicting models to predict. Similarly, errors for other types of predictive problems such as classification problems can be expressed via the gradient. Since we are predicting the gradients, we call this gradient boosting. 
+Before ending off, we explore why this is called *"gradient"* boosting. It turns out that the error which we mentioned above is the gradient of the loss function $$ wrt $$ the model prediction and this is generalizable to any differentiable loss function. For example, when we differentiate the squared error loss function, $$ 0.5 (y_{true}-y_{pred})^2 $$, we get $$ y_{pred}-y_{true} $$ which uncoincidentally happens to be the "error" which we train our new error predictors on. Similarly, errors for other types of predictive problems such as classification problems can be expressed via the gradient. Since we are predicting the gradients, we call this gradient boosting. 
 
-Mathematically, the derivative of the loss function, $$ \frac{\partial loss}{\partial pred} $$, gives the direction in which the predictions can be adjusted to maximize loss. In gradient boosting, we predict and adjust our predictions in the opposite (negative gradient) direction. This achieves the opposite (minimize the loss). Since, the loss of a model inversely relates to its performance and accuracy, doing so improves its performance. {% marginnote 'sn-three' 'You can also think about this as a form of Gradient Descend.'%} 
+Mathematically, the derivative of the loss function, $$ \frac{\partial loss}{\partial pred} $$, gives the direction in which the predictions can be adjusted to maximize loss. In gradient boosting, we predict and adjust our predictions in the opposite (negative gradient) direction. This achieves the opposite (minimize the loss). Since, the loss of a model inversely relates to its performance and accuracy, doing so improves its performance.
 
-Intuitively, we are shifting our model predictions in small steps towards directions which improve the overall performance of our model. 
+Intuitively, we are shifting our model predictions in small steps towards directions{% sidenote 'sn-four' 'You can also think about this as a form of <em>Gradient Descend</em>.'%}  which improve the overall performance of our model. 
 
 
 ## XGBoost

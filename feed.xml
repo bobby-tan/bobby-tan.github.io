@@ -1,31 +1,156 @@
----
-layout: null
-nav_exclude: true
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ site.title | xml_escape }}</title>
-    <description>{{ site.description | xml_escape }}</description>
-    <link>{{ site.url }}{{ site.baseurl }}/</link>
-    <atom:link href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" rel="self" type="application/rss+xml"/>
-    <pubDate>{{ site.time | date_to_rfc822 }}</pubDate>
-    <lastBuildDate>{{ site.time | date_to_rfc822 }}</lastBuildDate>
-    <generator>Jekyll v{{ jekyll.version }}</generator>
-    {% for post in site.posts limit:10 %}
+    <title>bobbys-notes</title>
+    <description>Snippets of thought from Bobby</description>
+    <link>/bobby-tan.github.io/</link>
+    <atom:link href="/bobby-tan.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Mon, 01 Jun 2020 13:44:38 -0400</pubDate>
+    <lastBuildDate>Mon, 01 Jun 2020 13:44:38 -0400</lastBuildDate>
+    <generator>Jekyll v4.1.0</generator>
+    
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        <description>{{ post.content | xml_escape }}</description>
-        <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
-        <link>{{ post.url | prepend: site.baseurl | prepend: site.url }}</link>
-        <guid isPermaLink="true">{{ post.url | prepend: site.baseurl | prepend: site.url }}</guid>
-        {% for tag in post.tags %}
-        <category>{{ tag | xml_escape }}</category>
-        {% endfor %}
-        {% for cat in post.categories %}
-        <category>{{ cat | xml_escape }}</category>
-        {% endfor %}
+        <title>The Intuition Behind Gradient Boosting &amp; XGBoost</title>
+        <description>&lt;p&gt;&lt;span class=&quot;newthought&quot;&gt;In this article&lt;/span&gt; , we present a very influential and powerful algorithm called &lt;em&gt;Extreme Gradient Boosting&lt;/em&gt; or XGBoost &lt;a href=&quot;#ref_one&quot;&gt;[1]&lt;/a&gt;. It is an implementation of Gradient Boosting machines which exploits various optimizations to train powerful predictive models very quickly.&lt;/p&gt;
+
+&lt;p&gt;As such, we will first explain &lt;a href=&quot;#gradient_boosting&quot;&gt;&lt;em&gt;Gradient Boosting&lt;/em&gt;&lt;/a&gt; &lt;a href=&quot;#ref_two&quot;&gt;[2]&lt;/a&gt; to set readers in context. Then, we walk through the workings of &lt;a href=&quot;#XGBoost&quot;&gt;XGBoost&lt;/a&gt; qualitatively, drawing connections to gradient boosting concepts as necessary. Finally, we talk about the various &lt;a href=&quot;#optimizations&quot;&gt;optimizations&lt;/a&gt; implemented and the ideas behind them.&lt;/p&gt;
+
+&lt;p&gt;In writing this article, I have made it a personal goal to be as qualitative as possible, bringing in equations only if it aids in the explanation. The goal is to provide readers with an intuition of how Gradient Boosting and XGBoost works.&lt;/p&gt;
+
+&lt;h2 id=&quot;gradient_boosting&quot;&gt;Gradient Boosting&lt;/h2&gt;
+
+&lt;p&gt;Gradient Boosting involves building an ensemble of weak learners. It builds upon 2 key insights. Here’s insight one.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;If we can account for our model’s errors, we will be able to improve our model’s performance.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p id=&quot;example&quot;&gt;
+Let's use a simple example to back this idea. Let's say we have a regressive model which predicts 3 for a test case whose actual outcome is 1. If we know the error (2 in the given example), we can fine-tune the prediction by subtracting the error, 2,from the original prediction, 3 and obtain a more accurate prediction of 1. This begs the question, &lt;em&gt;&quot;How do we know the error made by our model for any given input?&quot;&lt;/em&gt;, which leads us to our second insight.
+&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;We can train a new predictor to predict the errors made by the original model.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now, given any predictive model, we can improve its accuracy by first, training a new predictor&lt;label for=&quot;sn-one&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sn-one&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;The predictor used to predict the error can be any function approximator. &lt;/span&gt; to predict its current errors. Then, forming a new improved model whose output is the fine-tuned version of the original prediction. The improved model, which requires the outputs of both the &lt;em&gt;original predictor&lt;/em&gt; and the &lt;em&gt;error predictor&lt;/em&gt;, is now considered an ensemble of the two predictors. In gradient boosting, this is repeated arbitrary number of times to continually improve the model’s accuracy. This repeated process forms the crux of gradient boosting.&lt;/p&gt;
+
+&lt;h3 id=&quot;an-ensemble-of-weak-learners&quot;&gt;An Ensemble of Weak Learners&lt;/h3&gt;
+
+&lt;p&gt;When training a new error-predicting model to predict a model’s current errors, we regularize its complexity to prevent &lt;em&gt;overfitting&lt;/em&gt;&lt;label for=&quot;sn-two&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sn-two&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;A model which memorizes the errors for all of its training samples will have no use in the practical scenario. &lt;/span&gt;. This regularized model will have &lt;em&gt;‘errors’&lt;/em&gt; when predicting the original model’s &lt;em&gt;‘errors’&lt;/em&gt;. With reference to the &lt;a href=&quot;#example&quot;&gt;above example&lt;/a&gt;, it might not necessarily predict 2. Since the new improved model’s prediction depends on the new error-predicting model’s prediction, it too will have errors albeit lower than before.&lt;/p&gt;
+
+&lt;p&gt;To mitigate this, we perform 2 measures. First, we reduce our reliance or trust on any single error predictor by applying a small weight, &lt;em&gt;\(\eta\)&lt;/em&gt; (typically between 0 to 0.1) to its output. Then, instead of stopping after 1 iteration of improvement, we repeat the process multiple times, learning new error predictors for newly formed improved models till the accuracy or error is satisfactory. This is summed up using the equations below where \(x\) is an input.&lt;/p&gt;
+
+&lt;p&gt;&lt;label for=&quot;sn-three&quot; class=&quot;margin-toggle&quot;&gt; ⊕&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sn-three&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;marginnote&quot;&gt;Typically, the error-predicting model predicts the negative error and so, we use an addition instead of deduction. &lt;/span&gt;&lt;/p&gt;
+
+&lt;p id=&quot;steps&quot;&gt;&lt;/p&gt;
+
+\[\begin{align*}
+&amp;amp;improved\_model(x) = current\_model(x) + \eta \times error\_pred\_model(x)\\~\\
+&amp;amp;current\_model(x) = improved\_model(x)\\~\\
+&amp;amp;Repeat \ above \ 2 \ steps \ till \ satisfactory.
+\end{align*}\]
+
+&lt;p&gt;After every iteration, a new predictor accounting for the errors of the previous model will be learned and added into the ensemble. The number of iterations to perform and &lt;em&gt;\(\eta\)&lt;/em&gt; are hyperparameters.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;figure&gt;&lt;img src=&quot;/bobby-tan.github.io/assets/img/xgboost_1.png&quot; /&gt;&lt;figcaption class=&quot;maincolumn-figure&quot;&gt;&lt;span&gt;If your idea of &lt;em&gt;Gradient Boosting&lt;/em&gt; resembles the illustration, you are on the right track.&lt;/span&gt;&lt;/figcaption&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;gradient-boosting&quot;&gt;“Gradient” Boosting&lt;/h3&gt;
+
+&lt;p&gt;Before ending off, we explore why this is called &lt;em&gt;“gradient”&lt;/em&gt; boosting. It turns out that the error which we mentioned above is the gradient of the loss function \(wrt\) the model prediction and this is generalizable to any differentiable loss function. For example, when we differentiate the squared error loss function, \(0.5 (y_{true}-y_{pred})^2\), we get \(y_{pred}-y_{true}\) which uncoincidentally happens to be the “error” which we train our new error predictors on. Similarly, errors for other types of predictive problems such as classification problems can be expressed via the gradient. Since we are predicting the gradients, we call this gradient boosting.&lt;/p&gt;
+
+&lt;p&gt;Mathematically, the derivative of the loss function, \(\frac{\partial loss}{\partial pred}\), gives the direction in which the predictions can be adjusted to maximize loss. In gradient boosting, we predict and adjust our predictions in the opposite (negative gradient) direction. This achieves the opposite (minimize the loss). Since, the loss of a model inversely relates to its performance and accuracy, doing so improves its performance.&lt;/p&gt;
+
+&lt;p&gt;Intuitively, we are shifting our model predictions in small steps towards directions&lt;label for=&quot;sn-four&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sn-four&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;You can also think about this as a form of &lt;em&gt;Gradient Descend&lt;/em&gt;. &lt;/span&gt;  which improve the overall performance of our model.&lt;/p&gt;
+
+&lt;h2 id=&quot;xgboost&quot;&gt;XGBoost&lt;/h2&gt;
+
+&lt;p&gt;XGBoost is a flavour of gradient boosting machines which uses Gradient Boosting Trees (gbtree) as the error predictor. It starts off with a simple predictor which predicts an arbitrary number (usually 0.5) regardless of the input. Needless to say, that predictor has a very high error rate. Then, the &lt;a href=&quot;#steps&quot;&gt;above idea&lt;/a&gt; is applied till the error is brought to a minimum. In XGBoost, training of the error prediction model is not done by trivially optimizing the predictor on  \((feature, error)\) pairs. Next, let’s take a look at how they are built.&lt;/p&gt;
+
+&lt;h3 id=&quot;gradient-boosting-tree&quot;&gt;Gradient Boosting Tree&lt;/h3&gt;
+
+&lt;p&gt;In XGBoost, a gbtree is learnt such that the overall loss of the new model is minimized while keeping in mind not to &lt;em&gt;overfit&lt;/em&gt; the model. Note that in this section, we are talking about 1 iteration of the above idea. To understand it better, let’s start from the simplest possible tree which makes no split and predicts the same value regardless of the input. This tree is extremely simple, is independent of the input and is definitely underfitted. Nonetheless, it can still help in decreasing loss. The problem mentioned can be represented by the equations below.&lt;/p&gt;
+
+\[~\\ ~ \\
+
+Loss(o) = \min_{o}  \sum_{i = 1}^N loss(y_i, f(x_i)+o) + \frac{1}{2}\lambda o^2 \\ ~ \\
+
+\begin{align*}
+&amp;amp;where\ N\ is\ the\ number\ of\ samples,\ f\ is\ the\ original\ model,\\
+&amp;amp;\lambda \ is\ the\ L2\ regularization\ parameter\ and\ o\ is\ the\ value\ which\ we\ want\ to\ find.
+\end{align*}
+
+~ \\ ~ \\\]
+
+&lt;p&gt;The L2 regularization&lt;label for=&quot;sn-five&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sn-five&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;Refer to this &lt;a href=&quot;https://towardsdatascience.com/intuitions-on-l1-and-l2-regularisation-235f2db4c261&quot;&gt;article&lt;/a&gt; for an explanation about L2 regularization. &lt;/span&gt; applied, as represented by the \(\frac{1}{2}\lambda o^2\) term, has been shown experimentally to be effective in preventing overfitting. While not useful in this already underfitted model, it will come into relevance as we increase the tree complexity. A problem like this can be solved by differentiating the expression \(wrt\ o\), setting the derivative to 0 and then finding the corresponding \(o\). Unfortunately, the expression we see above is hard to differentiate. To get around this, we approximate that expression with simpler terms using Quadratic Approximation&lt;label for=&quot;sn-five&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sn-five&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;You can watch this &lt;a href=&quot;https://www.khanacademy.org/math/multivariable-calculus/applications-of-multivariable-derivatives#quadratic-approximations&quot;&gt;Khan Academy series&lt;/a&gt; to understand Quadratic Approximation and do the derivation as an exercise. &lt;/span&gt;.&lt;/p&gt;
+
+\[~ \\ ~ \\ 
+
+Loss(o) \approx  \sum_{i = 1}^N [loss(y_i, f(x_i)) + \frac{\partial loss}{\partial \widehat{y}}(y_i, f(x_i))o + \frac{1}{2} \frac{\partial^2 loss}{\partial \widehat{y}^2}(y_i, f(x_i)) o^2] + \frac{1}{2}\lambda o^2 \\ ~ \\
+
+\approx \sum_{i = 1}^N [loss(y_i, f(x_i)) + g_io + \frac{1}{2} h_i o^2] + \frac{1}{2}\lambda o^2 \\~ \\
+
+where\ g_i = \frac{\partial loss}{\partial \widehat{y}}(y_i, f(x_i)) \ and\ h_i=\frac{\partial^2 loss}{\partial \widehat{y}^2}(y_i, f(x_i)).
+
+~ \\ ~ \\\]
+
+&lt;p&gt;This simplified expression can be differentiated easily and after setting the derivative to 0, we can solve and obtain \(o\). It turns out that \(o\) is the following.&lt;/p&gt;
+
+&lt;p&gt;&lt;label for=&quot;mf-1&quot; class=&quot;margin-toggle&quot;&gt;⊕&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;mf-1&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;marginnote&quot;&gt;&lt;img class=&quot;fullwidth&quot; src=&quot;/bobby-tan.github.io/assets/img/Figure 2.png&quot; /&gt;&lt;br /&gt;An illustration of the scenario given: We find a single best adjustment \(o\) which we can apply to any sample in our dataset to minimize overall loss.&lt;/span&gt;&lt;/p&gt;
+
+\[~ \\ ~ \\ 
+
+o = \frac{\sum_{i = 1}^N g_i}{\sum_{i = 1}^N h_i + \lambda}
+
+~ \\ ~ \\\]
+
+&lt;p&gt;Keep in mind that, now, given a model \(f\) and a set of samples, we can find a single adjustment \(o\) which best improves our model. &lt;a id=&quot;note_1&quot;&gt;&lt;/a&gt;&lt;em&gt;Note that \(o\) can also be substituted back into the equation to compute the value of \(Loss\).&lt;/em&gt; The remaining of this section talks about how we can further improve (decrease the loss) by increasing the complexity of our simple model (growing the tree). Here’s the overall idea.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;By cleverly dividing the samples into subgroups and then finding \(o\) for each subgroup (using the method above), the performance of the model can be further improved (loss can be brought lower).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The samples can be divided using split conditions. For example, if a split condition is &lt;em&gt;“feature x less than 10”&lt;/em&gt;, samples whose feature x has value less than 10 will go into 1 subgroup and the rest, to the other group. Each subgroup can be further divided iteratively if necessary. These splits divide the original feature space into smaller subspaces and samples in each subspace form a subgroup. For each subgroup, its optimal \(o\) and Loss&lt;label for=&quot;sn-six&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sn-six&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;&lt;a href=&quot;#note_1&quot;&gt;Remember&lt;/a&gt; that the minimum loss for a subgroup can be computed by substituting optimal \(o\) back into \(Loss\). &lt;/span&gt; can be solved using the above technique. The overall loss, \(Loss\), is the summation of the loss of each subgroup (leaves in the decision tree).&lt;label for=&quot;mf-2&quot; class=&quot;margin-toggle&quot;&gt;⊕&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;mf-2&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;marginnote&quot;&gt;&lt;img class=&quot;fullwidth&quot; src=&quot;/bobby-tan.github.io/assets/img/Figure 3.png&quot; /&gt;&lt;br /&gt;An illustration of the discussed concept: In this example, the features space is divided into 3 segments with splits \(B &amp;lt; 2\) and \(A &amp;lt; 2.5\). The optimal \(o\) for each subgroup is then computed using the discussed technique.&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;At each group or subgroup, the decision of whether to split and if so, which split to use depends on whether a split can reduce the loss of that group and how much each split decreases loss. We always choose the split which minimizes \(Loss\) and will not split if \(Loss\) cannot be decreased.&lt;/p&gt;
+
+&lt;p&gt;Let’s describe what’s happening intuitively. The current model has different levels of errors in different parts of the feature space. It overpredicts for some samples, underpredicts for others and by varying magnitudes. &lt;em&gt;By segmenting the feature space such that the errors in each subgroup are similar, more specific and thus, better adjustments can be computed for each subgroup, enhancing overall model performance.&lt;/em&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;overfitting&quot;&gt;Overfitting&lt;/h3&gt;
+
+&lt;p&gt;To prevent &lt;em&gt;overfitting&lt;/em&gt;, several measures are implemented. We discuss two important ones here. First, the maximum height of trees grown can be capped by the user. This helps in limitings the number of subgroups (leaves) which can be formed. Second, the decrease in loss from a split must exceed a certain threshold set by the user for XGBoost to allow it. This is modeled into the \(Loss\) via an additional regularization term, \(\gamma T\ where\ T\ is\ the\ number\ of\ leaves\). This was omited earlier on to prevent confusion.&lt;/p&gt;
+
+&lt;h2 id=&quot;optimizations&quot;&gt;Optimizations&lt;/h2&gt;
+
+&lt;p&gt;Here are interesting optimizations used by XGBoost to increase training speed and accuracy.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Weighted Quantile Sketch&lt;/strong&gt; for finding approximate best split - Before finding the best split, we form a histogram for each feature. The boundaries of the histogram bins are then used as candidate points for finding the best split. In the Weighted Quantile Sketch, the data points are assigned weights based on the “confidence” of their current predictions and the histograms are built such that each bin has approximately the same total weight (as opposed to the same number of points in the traditional quantile sketch). As a result, more candidate points and thus, a more detailed search will exist in areas where the model is doing poorly.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Parallelization&lt;/strong&gt; for faster tree building process - When finding optimal splits, the trying of candidate points can be parallelized at the feature/column level. For example, core 1 can be finding the best split point and its corresponding loss for &lt;em&gt;feature A&lt;/em&gt; while core 2 can be doing the same for &lt;em&gt;feature B&lt;/em&gt;. In the end, we compare the losses and use the best one as the split point.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Sparsity-Aware Split Finding&lt;/strong&gt; for handling sparse data - XGBoost handles this sparsity, which may result from missing values or frequent zero entries from one-hot encodings by assigning them a default direction at every node in the tree. The default direction is chosen based on which reduces the \(Loss\) more. On top of this, XGBoost ensures that sparse data are not iterated over during the split finding process, preventing unneccessary computation.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Hardware Optimizations&lt;/strong&gt; - XGBoost stores the frequently used \(g_i\)s and \(h_i\)s in the cache to minimize data access costs. When disk usage is required (due to data not fitting into memory), the data is compressed before storage, reducing the IO cost involved at the expense of some compression computation. If multiple disks exist, the data can be &lt;a href=&quot;https://en.wikipedia.org/wiki/Shard_(database_architecture)&quot;&gt;sharded&lt;/a&gt; to increase disk reading throughput.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Column and Row Subsampling&lt;/strong&gt; - To reduce training time, XGBoost provides the option of training every tree with only a randomly sampled subset of the original data rows where the size of this subset is determined by the user. The same applies to the columns/features of the dataset. Apart from savings in training time, subsampling the columns during training has the effect of decorrelating the trees which can reduce overfitting and boost model performance. This idea is also used in the Random Forest&lt;label for=&quot;sn-seven&quot; class=&quot;margin-toggle sidenote-number&quot;&gt;&lt;/label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;sn-seven&quot; class=&quot;margin-toggle&quot; /&gt;&lt;span class=&quot;sidenote&quot;&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Random_forest&quot;&gt;https://en.wikipedia.org/wiki/Random_forest&lt;/a&gt; &lt;/span&gt; algorithm.&lt;/p&gt;
+
+&lt;h2 id=&quot;end-note-and-references&quot;&gt;End Note and References&lt;/h2&gt;
+
+&lt;p&gt;Cheers, we have reached the end. Hopefully, this has helped you. Feel free to E-mail me (liangweitan300895@gmail.com) for feedback, questions or even a chat.&lt;/p&gt;
+
+&lt;p&gt;[1]&lt;cite id=&quot;ref_one&quot;&gt;&lt;a href=&quot;https://arxiv.org/abs/1603.02754&quot;&gt;T. Chen and C. Guestrin, “XGBoost: A Scalable Tree Boosting System,” no. arXiv:1603.02754 [cs.LG], 2016&lt;/a&gt;&lt;/cite&gt;
+&lt;br /&gt;
+[2]&lt;cite id=&quot;ref_two&quot;&gt;&lt;a href=&quot;https://statweb.stanford.edu/~jhf/ftp/stobst.pdf&quot;&gt;J. H. Friedman, “Stochastic Gradient Boosting,” 1999&lt;/a&gt;&lt;/cite&gt;&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 11 May 2020 00:00:00 -0400</pubDate>
+        <link>/bobby-tan.github.io/articles/20/The-Intuition-Behind-Gradient-Boosting-and-XGBoost</link>
+        <guid isPermaLink="true">/bobby-tan.github.io/articles/20/The-Intuition-Behind-Gradient-Boosting-and-XGBoost</guid>
+        
+        
       </item>
-    {% endfor %}
+    
   </channel>
 </rss>
